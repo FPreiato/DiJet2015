@@ -54,6 +54,7 @@ void baseClass::init()
 {
   //STDOUT("begins");
   tree_ = NULL;
+
   int processedEvents = readInputList();
   readCutFile();
   if(tree_ == NULL){
@@ -1502,6 +1503,22 @@ void baseClass::FillUserTH2DLower(const char* nameAndTitle, Double_t value_x,  D
     }
 }
 
+void baseClass::CreateAndFillUserTProfile(const char* nameAndTitle, Int_t nbinsx, Double_t xlow, Double_t xup, Double_t ylow, Double_t yup,  Double_t value_x,  Double_t value_y)
+{
+  map<std::string , TProfile*>::iterator nh_h = userTProfiles_.find(std::string(nameAndTitle));
+  TProfile * h;
+  if( nh_h == userTProfiles_.end() )
+    {
+      h = new TProfile(nameAndTitle, nameAndTitle, nbinsx, xlow, xup, ylow, yup);
+      //      h->Sumw2();
+      userTProfiles_[std::string(nameAndTitle)] = h;
+      h->Fill(value_x, value_y);
+    }
+  else
+    {
+      nh_h->second->Fill(value_x, value_y);
+    }
+}
 
 bool baseClass::writeUserHistos()
 {
@@ -1520,7 +1537,12 @@ bool baseClass::writeUserHistos()
       output_root_->cd();
       uh_h->second->Write();
     }
-  // Any failure mode to implement?
+  for (map<std::string, TProfile*>::iterator uh_h = userTProfiles_.begin(); uh_h != userTProfiles_.end(); uh_h++)
+    {
+      output_root_->cd();
+      uh_h->second->Write();
+    } 
+ // Any failure mode to implement?
   return ret;
 }
 
