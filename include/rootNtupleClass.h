@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Mon Dec  1 12:25:49 2014 by ROOT version 5.34/18
+// Wed Apr  8 10:35:11 2015 by ROOT version 5.34/18
 // from TChain dijets/events/
 //////////////////////////////////////////////////////////
 
@@ -26,6 +26,7 @@ const Int_t kMaxrun = 1;
 const Int_t kMaxevt = 1;
 const Int_t kMaxlumi = 1;
 const Int_t kMaxnVtx = 1;
+const Int_t kMaxrho = 1;
 const Int_t kMaxmet = 1;
 const Int_t kMaxmetSig = 1;
 const Int_t kMaxnJetsAK4 = 1;
@@ -54,6 +55,7 @@ public :
    Int_t           evtNo;
    Int_t           lumi;
    Int_t           nvtx;
+   Float_t         rho;
    Float_t         met;
    Float_t         metSig;
    vector<float>   *gen_eta;
@@ -88,6 +90,7 @@ public :
    vector<float>   *jetPhiAK4;
    vector<float>   *jetMassAK4;
    vector<float>   *jetEnergyAK4;
+   vector<float>   *jetAreaAK4;
    vector<float>   *jetChfAK4;
    vector<float>   *jetNhfAK4;
    vector<float>   *jetPhfAK4;
@@ -101,6 +104,7 @@ public :
    vector<float>   *jetPhiAK8;
    vector<float>   *jetMassAK8;
    vector<float>   *jetEnergyAK8;
+   vector<float>   *jetAreaAK8;
    vector<float>   *jetChfAK8;
    vector<float>   *jetNhfAK8;
    vector<float>   *jetPhfAK8;
@@ -137,6 +141,7 @@ public :
    TBranch        *b_evt_;   //!
    TBranch        *b_lumi_;   //!
    TBranch        *b_nVtx_;   //!
+   TBranch        *b_rho_;   //!
    TBranch        *b_met_;   //!
    TBranch        *b_metSig_;   //!
    TBranch        *b_gen_eta;   //!
@@ -171,6 +176,7 @@ public :
    TBranch        *b_jetPhiAK4;   //!
    TBranch        *b_jetMassAK4;   //!
    TBranch        *b_jetEnergyAK4;   //!
+   TBranch        *b_jetAreaAK4;   //!
    TBranch        *b_jetChfAK4;   //!
    TBranch        *b_jetNhfAK4;   //!
    TBranch        *b_jetPhfAK4;   //!
@@ -184,6 +190,7 @@ public :
    TBranch        *b_jetPhiAK8;   //!
    TBranch        *b_jetMassAK8;   //!
    TBranch        *b_jetEnergyAK8;   //!
+   TBranch        *b_jetAreaAK8;   //!
    TBranch        *b_jetChfAK8;   //!
    TBranch        *b_jetNhfAK8;   //!
    TBranch        *b_jetPhfAK8;   //!
@@ -249,7 +256,7 @@ rootNtupleClass::rootNtupleClass(TTree *tree) : fChain(0)
       // The following code should be used if you want this class to access a chain
       // of trees.
       TChain * chain = new TChain("dijets/events","");
-      chain->Add("dcap://cmsrm-se01.roma1.infn.it/pnfs/roma1.infn.it/data/cms/store/user/gdimperi/ggRSGgg_PU20bx25_v1_20141121_183155/RSGravitonToGluonGluon_kMpl01_M_3000_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_PHYS14_25_V1-v1__MINIAODSIM_1_1_sOh.root/dijets/events");
+      chain->Add("/tmp/fpreiato/RSGravitonToQuarkQuark_kMpl01_M_3000_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_PHYS14_25_V1-v1__MINIAODSIM_10_1_WRL.root/dijets/events");
       tree = chain;
 #endif // SINGLE_TREE
 
@@ -315,6 +322,7 @@ void rootNtupleClass::Init(TTree *tree)
    jetPhiAK4 = 0;
    jetMassAK4 = 0;
    jetEnergyAK4 = 0;
+   jetAreaAK4 = 0;
    jetChfAK4 = 0;
    jetNhfAK4 = 0;
    jetPhfAK4 = 0;
@@ -328,6 +336,7 @@ void rootNtupleClass::Init(TTree *tree)
    jetPhiAK8 = 0;
    jetMassAK8 = 0;
    jetEnergyAK8 = 0;
+   jetAreaAK8 = 0;
    jetChfAK8 = 0;
    jetNhfAK8 = 0;
    jetPhfAK8 = 0;
@@ -363,6 +372,7 @@ void rootNtupleClass::Init(TTree *tree)
    fChain->SetBranchAddress("evtNo", &evtNo, &b_evt_);
    fChain->SetBranchAddress("lumi", &lumi, &b_lumi_);
    fChain->SetBranchAddress("nvtx", &nvtx, &b_nVtx_);
+   fChain->SetBranchAddress("rho", &rho, &b_rho_);
    fChain->SetBranchAddress("met", &met, &b_met_);
    fChain->SetBranchAddress("metSig", &metSig, &b_metSig_);
    fChain->SetBranchAddress("gen_eta", &gen_eta, &b_gen_eta);
@@ -397,6 +407,7 @@ void rootNtupleClass::Init(TTree *tree)
    fChain->SetBranchAddress("jetPhiAK4", &jetPhiAK4, &b_jetPhiAK4);
    fChain->SetBranchAddress("jetMassAK4", &jetMassAK4, &b_jetMassAK4);
    fChain->SetBranchAddress("jetEnergyAK4", &jetEnergyAK4, &b_jetEnergyAK4);
+   fChain->SetBranchAddress("jetAreaAK4", &jetAreaAK4, &b_jetAreaAK4);
    fChain->SetBranchAddress("jetChfAK4", &jetChfAK4, &b_jetChfAK4);
    fChain->SetBranchAddress("jetNhfAK4", &jetNhfAK4, &b_jetNhfAK4);
    fChain->SetBranchAddress("jetPhfAK4", &jetPhfAK4, &b_jetPhfAK4);
@@ -410,6 +421,7 @@ void rootNtupleClass::Init(TTree *tree)
    fChain->SetBranchAddress("jetPhiAK8", &jetPhiAK8, &b_jetPhiAK8);
    fChain->SetBranchAddress("jetMassAK8", &jetMassAK8, &b_jetMassAK8);
    fChain->SetBranchAddress("jetEnergyAK8", &jetEnergyAK8, &b_jetEnergyAK8);
+   fChain->SetBranchAddress("jetAreaAK8", &jetAreaAK8, &b_jetAreaAK8);
    fChain->SetBranchAddress("jetChfAK8", &jetChfAK8, &b_jetChfAK8);
    fChain->SetBranchAddress("jetNhfAK8", &jetNhfAK8, &b_jetNhfAK8);
    fChain->SetBranchAddress("jetPhfAK8", &jetPhfAK8, &b_jetPhfAK8);

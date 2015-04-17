@@ -1,0 +1,58 @@
+################################## NO JSON file used at runtime ###################################################################
+################################## NO PILEUP files used at runtime ###################################################################
+################################## Preliminary Cut Values ###################################################################
+########################### variableName                        value1          value2          value3          value4          level
+### Preliminary cut values: produceSkim	 		0		-		-		-		-1
+### Preliminary cut values: produceReducedSkim		1		-		-		-		-1
+### Preliminary cut values: jetFidRegion			2.5		-		-		-		-1	
+### Preliminary cut values: tightJetID			1		-		-		-		-1
+### Preliminary cut values: pt0Cut				60		-		-		-		-1
+### Preliminary cut values: pt1Cut				30		-		-		-		-1
+### Preliminary cut values: ptCut				30		-		-		-		-1
+### Preliminary cut values: DeltaR				1.1		-		-		-		-1
+### Preliminary cut values: useFastJet			0		-		-		-		-1
+### Preliminary cut values: jetAlgo				AntiKt 		-		-		-		-1
+################################## Cuts #####################################################################################
+#id             variableName           min1           max1           min2           max2          level              N          Npass         EffRel      errEffRel         EffAbs      errEffAbs
+  0                              nocut              -              -              -              -              -         100000         100000         1.0000         0.0000         1.0000         0.0000
+  1                               nVtx         1.0000           +inf              -              -              1    100000.0000     67351.0000         0.6735     1.4829e-03         0.6735     1.4829e-03
+  2                         IdTight_j1         0.5000         1.5000              -              -              1     67351.0000     67278.0000         0.9989     1.2679e-04         0.6728     1.4837e-03
+  3                         IdTight_j2         0.5000         1.5000              -              -              1     67278.0000     67239.0000         0.9994     9.2797e-05         0.6724     1.4842e-03
+  4                               nJet         1.0000           +inf              -              -              1     67239.0000     0.0000e+00     0.0000e+00           -nan     0.0000e+00           -nan
+  5                              pT_j1        60.0000           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+  6                             eta_j1        -2.5000         2.5000              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+  7                              pT_j2        30.0000           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+  8                             eta_j2        -2.5000         2.5000              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+  9                   GendeltaETAjj_hp         0.0000           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 10                          Genmjj_hp           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 11                      GendeltaETAjj         0.0000           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 12                             Genmjj           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 13                 GendeltaETAjj_wide         0.0000           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 14                        Genmjj_wide           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 15                         deltaETAjj         0.0000           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 16                                mjj           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 17                    deltaETAjj_wide         0.0000           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 18                           mjj_wide           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 19                            passHLT           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 20                                run           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 21                              event           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 22                               lumi           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 23                            trueVtx           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 24                                MET           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 25                       METoverHTAK4           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 26                              HTAK4           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 27                              ptHat           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 28                             weight           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 29                         deltaPHIjj           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 30                             phi_j1           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 31                  neutrHadEnFrac_j1           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 32                chargedHadEnFrac_j1           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 33                    photonEnFrac_j1           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 34                      eleEnFract_j1           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 35                       muEnFract_j1           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 36                             phi_j2           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 37                  neutrHadEnFrac_j2           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 38                chargedHadEnFrac_j2           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 39                    photonEnFrac_j2           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 40                      eleEnFract_j2           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan
+ 41                       muEnFract_j2           -inf           +inf              -              -              1     0.0000e+00     0.0000e+00           -nan           -nan     0.0000e+00           -nan

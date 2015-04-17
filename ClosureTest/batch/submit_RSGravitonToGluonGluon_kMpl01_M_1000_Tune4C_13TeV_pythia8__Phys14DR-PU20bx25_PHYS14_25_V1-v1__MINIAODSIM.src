@@ -1,0 +1,5 @@
+#!/bin/bash
+export SCRAM_ARCH=slc6_amd64_gcc481
+cd /cmshome/fpreiato/DiJet/test/CMSSW_7_2_1_DiJet/src/CMSDIJET/DijetRootTreeAnalyzer/ClosureTest 
+eval `scramv1 runtime -sh`
+./main config/lists//RSGravitonToGluonGluon_kMpl01_M_1000_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_PHYS14_25_V1-v1__MINIAODSIM.txt config/cutFile_mainDijetSelection.txt dijets/events ClosureOn_RecoGen_QCDSamples//rootfile_RSGravitonToGluonGluon_kMpl01_M_1000_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_PHYS14_25_V1-v1__MINIAODSIM ClosureOn_RecoGen_QCDSamples//cutEfficiencyFile_RSGravitonToGluonGluon_kMpl01_M_1000_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_PHYS14_25_V1-v1__MINIAODSIM
