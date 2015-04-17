@@ -15,7 +15,7 @@
 //cambia file per leggere le giuste funzioni di smearing
 //TFile file1("/cmshome/fpreiato/DiJet/test/CMSSW_7_2_1_DiJet/src/CMSDIJET/DijetRootTreeAnalyzer/output/rootFile.root");
 
-TFile file1("/cmshome/fpreiato/DiJet/test/CMSSW_7_2_1_DiJet/src/CMSDIJET/DijetRootTreeAnalyzer/SmearingFunctions_RecoGen_QCDSample/SmearingFunctions_QCDSamples.root");
+TFile file1("/cmshome/fpreiato/DiJet/test/CMSSW_7_2_1_DiJet/src/CMSDIJET/DijetRootTreeAnalyzer/SmearingFunctions_RecoGen_QCDSample/SmearingFunctions_AllBinAllSampleSampleQCDOddEvents.root");
 
 TH1D *H_step_pt = (TH1D*)file1.Get("H_step_pt");
 int step_pt = H_step_pt->GetMean();
