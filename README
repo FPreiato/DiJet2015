@@ -1,4 +1,3 @@
-
 Introduction:
 -------------
 
@@ -26,47 +25,69 @@ chain of root files and a file to provide a cut list) and executes the analysisC
 Instructions:
 -------------
 
-1) Environment setup:
-    cd CMSSW_7_1_0/src/ 
-    cmsenv	
-
-(or the most recent release)   
-
-2) Download the code:
-    git clone https://github.com/CMSDIJET/DijetRootTreeAnalyzer.git CMSDIJET/DijetRootTreeAnalyzer
-
-3) Go inside:
+Inside:	
     cd CMSDIJET/DijetRootTreeAnalyzer
 
-=======
-4) to generate the rootNtupleClass (you do not need to unless the ntuple format changes):
-    cd CMSDIJET/DijetRootTreeAnalyzer
-    ./scripts/make_rootNtupleClass.sh
-      (you will be asked for input arguments)
-   i.e.
-    ./scripts/make_rootNtupleClass.sh -f dijetTree_signal.root -t dijets/events
-   where the rootfile has been produced by the DijetRootTreeMaker
-   Note that there could be minor glitches and then you can fix by hand.
-=======
+1) Run a kind of MakeClass on file.root with nameTree
+ 
+                    ./scripts/make_rootNtupleClass.sh –f file.root –f nameTree
 
-5) Make a symbolic link analysisClass.C by:
-    ln -sf analysisClass_myCodeWide.C src/analysisClass.C 
+EX:
+./scripts/make_rootNtupleClass.sh –f /tmp/fpreiato/RSGravitonToQuarkQuark_kMpl01_M_3000_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_PHYS14_25_V1-v1__MINIAODSIM_10_1_t8g.root -t dijets/events
+
+Say yes ("y") both questions
+
+2) Virtual link between your program and general program analysisClass.C 
+
+ln -sf analysisClass_mainDijetSelection.C src/analysisClass.C
    or 
-    ln -sf analysisClass_myCodeAK8.C src/analysisClass.C
-   or
-    ln -sf analysisClass_myCodeCA8.C src/analysisClass.C
+ln -sf analysisClass_myCodeAK8.C src/analysisClass.C
 
-6) Compile to test that all is OK so far:
-    make clean
-    make
+3) To compile
 
-7) Run:
-    ./main
-      (you will be asked for input arguments)
-   i.e.
-    ./main config/inputListJets.txt config/cutFileExampleJet.txt dijets/events output/rootFile output/cutEfficiencyFile
+Make clean
 
-8) All the produced files are in the directory output
+Make all
+
+4) Write the name file in a list  inputListJets.txt
+
+EX:
+echo "/tmp/fpreiato/RSGravitonToQuarkQuark_kMpl01_M_1000_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_PHYS14_25_V1-v1__MINIAODSIM_10_1_t8g.root" > ! config/inputListJets.txt
+
+5) Run the analysis program /.main: 
+reads the previous txt list, config-file from the rootfile directoty/nameTree.
+ In output rootFile (.root) and cutEfficiencuFile (.root). All the produced files are in the directory output.
+
+EX:
+./main config/inputListJets.txt config/cutFile_mainDijetSelection.txt dijets/events output/rootFile output/cutEfficiencyFile
+
+If you want save others variables you have to put these in the config/cutFile_mainDijetSelection.txt
+
+###########################################################
+
+You can run on a list of files
+
+1) To make the list -> From directory DijetRootAnalyzer
+
+python createList_T2.py –i path/cartella_input –o /path/cartella_output
+
+EX:
+python createList_T2.py -i /pnfs/roma1.infn.it/data/cms/store/user/santanas/qqRSGqq_PU20bx25_Tag626513a_20141225_124228/ -o /cmshome/fpreiato/DiJet/test/CMSSW_7_2_1_DiJet/src/CMSDIJET/DijetRootTreeAnalyzer/config/lists
+
+2) To run the analysis program in bash on this list
+
+python scripts/submit_batch_T2.py -i config/lists/ -o output/
+
+config/lists/ -> directory where is the list
+
+output/ -> directory for the output of program
+
+Produce:
+rootFile_for_every_MassSample.root
+rootFile_reduced_skim_for _every_MassSample.root
+cutEfficiencyFile_for_every_MassSample.root.root
+
+###########################################################
 
 Notes:
 
@@ -78,19 +99,10 @@ Notes:
     ln -sf analysisClass_myCode2.C src/analysisClass.C
    and compile/run as above.
 
+-------------- More details
 
-More details:
--------------
-- Example code:
-The src/analysisClass_template.C comes with simple example code. The example code in enclosed by
-  #ifdef USE_EXAMPLE
-    ... code ...
-  #endif //end of USE_EXAMPLE
-The code is NOT compiled by default. In order to compile it, uncomment the line
-  #FLAGS += -DUSE_EXAMPLE
-in the Makefile.
+1) Providing cuts via file:
 
-- Providing cuts via file:
 A list of cut variable names and cut limits can be provided through a file (see config/cutFileExample.txt).
 The variable names in such a file have to be filled with a value calculated by the user analysisClass code,
 a function "fillVariableWithValue" is provided - see example code.
@@ -119,7 +131,8 @@ region limits). The user can access these values (and also those of the cuts wit
   double baseClass::getCutMinValue2(const string& s);
   double baseClass::getCutMaxValue2(const string& s);
 
-- Automatic histograms for cuts
+2) Automatic histograms for cuts
+
 The following histograms are generated for each cut variable with level >= 0:
   no cuts applied
   passedAllPreviousCuts
@@ -134,8 +147,8 @@ is saved to the output root file. All histograms can be saved to the output root
 uncommenting the following line in the Makefile
 #FLAGS += -DSAVE_ALL_HISTOGRAMS
 
+3) Automatic cut efficiency:
 
-- Automatic cut efficiency:
 the absolute and relative efficiency is calculated for each cut and stored in an output file
 (named output/cutEfficiencyFile.dat if the code is executed following the examples)
 
@@ -154,15 +167,13 @@ file and one edit to the analysisClass.C file.
 Note that the use of a JSON file (good run list) is optional.  If the user does not list a JSON file in the cut file,
 no selection will be made.
 
-This tool was validated on May 18, 2011.  The results of the validation study are here:
-https://twiki.cern.ch/twiki/pub/CMS/ExoticaLeptoquarkAnalyzerRootNtupleMakerV2/json_validation.pdf
+#############################################
 
 Additional scripts for running on several datasets:
----------------------------------------------------
 
 See ./doc/howToMakeAnalysisWithRootTuples.txt
 
-
+#############################################
 
 Using the Optimizer (Jeff Temple):
 ----------------------------------
@@ -199,7 +210,7 @@ each bin can be produced by uncommenting the line
 #FLAGS += -DCREATE_OPT_CUT_FILE
 in the Makefile. Since this file can be quite large (10^N lines), by default it is not created.
 
-
+###################################################
 
 Producing an ntuple skim (Dinko Ferencek):
 ------------------------------------------
@@ -219,19 +230,16 @@ If the above preliminary cut line is not present in the cut file, is commented o
 the skim creation will be turned off and calling the fillSkimTree() method will have no effect.
 
 
-
 JSON parser (Edmund Berry):
 ---------------------------
 
 See https://hypernews.cern.ch/HyperNews/CMS/get/exotica-lq/266.html
 
 
-
 PU reweight (Edmund Berry):
 ---------------------------
 
 See https://twiki.cern.ch/twiki/pub/CMS/Exo2011LQ1AndLQ2Analyses/PileupReweightingCode.pdf
-
 
 
 Producing a new ntuple with a subset of cutFile variables and a subset of events (Paolo, Francesco, Edmund):
@@ -267,4 +275,47 @@ the skim creation will be turned off and calling the fillReducedSkimTree() metho
 The new ntuple will be created in a file named as the std output root file with _reduced_skim appended
 before the .root and the tree name will be as in the input root file.
 
+############################################
+############################################
 
+Instruction for the Maker
+
+Inside:	
+    cd CMSDIJET/DijetRootTreeMaker
+
+
+1) Change the Tree variables in:
+
+/prod/flat-signal-cfg_miniAOD.py
+
+
+  ---  Needs root file in input -> change name in -> PoolSource ( fileNames = cms.untracked.vstring('file:9EE6AF6D-766F-E411-AE11-0026189437FD.root') )
+  --- Change name output file root -> THISROOTFILE ( fileName=cms.string('dijetTree_RSGravitonToQuarkQuark_M3000.root'), )
+  --- Change global tag -> THISGLOBALTAG ( process.GlobalTag.globaltag = 'PHYS14_25_V2::All' )
+
+file 9EE6AF6D-766F-E411-AE11-0026189437FD.root copied with and from:
+
+dccp /pnfs/roma1.infn.it/data/cms/store/mc/Phys14DR/QstarToJJ_M_3000_Tune4C_13TeV_pythia8/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/10000/6EF79FD0-F06B-E411-B733-BCAEC50971E2.root
+
+
+---- Number of events generated:
+
+  process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10000))
+
+ 2) To compile from directory DijetRootMaker
+
+> scram b
+
+ 3) Run from directory prod/
+
+cmsRun flat-signa-cfg_miniAOD.py
+
+-> produce the file output.root with all variables
+
+###################################################
+
+--  To compile program.c as Compare.C
+
+g++ -o programma.exe programma.cc `root-config --cflags  --glibs`
+
+##################################################
