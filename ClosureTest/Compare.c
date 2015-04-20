@@ -21,10 +21,18 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 
-    char directory_output[300] = "ClosureOn_RecoGen_QCDSamples/" ;
-   
-  //Cambia file  
-  TFile file1("ClosureOn_RecoGen_QCDSamples/rootfile_RSGravitonToQuarkQuark_kMpl01_M_3000_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_PHYS14_25_V1-v1__MINIAODSIM.root");
+  string * inputFile = new string(argv[1]);
+  string * output_dir = new string(argv[2]);
+
+  char * input_file = new char [inputFile->length()+1];
+  strcpy (input_file, inputFile->c_str());
+
+  char * directory_output = new char [output_dir->length()+1];
+  strcpy (directory_output, output_dir->c_str());
+
+  //  TFile file1("ClosureOn_RecoGen_QCDSamples/rootfile_RSGravitonToQuarkQuark_kMpl01_M_3000_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_PHYS14_25_V1-v1__MINIAODSIM.root");
+
+  TFile file1(input_file);
 
   TH1D *H_JetSmeared1_Pt     = (TH1D*)file1.Get("H_JetSmeared1_Pt");
   TH1D *H_JetSmeared1_Eta   = (TH1D*)file1.Get("H_JetSmeared1_Eta");
