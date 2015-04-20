@@ -51,9 +51,12 @@ Thumbs.db
 #################
 *.root
 
-# Output programma ./main
+# Output programma ./main o submit jobs
 ######################
 *.dat
+*.src
+core.*
+
 
 ##################
 \#*
