@@ -1,5 +1,0 @@
-#!/bin/bash
-export SCRAM_ARCH=slc6_amd64_gcc481
-cd /cmshome/fpreiato/DiJet/test/CMSSW_7_2_1_DiJet/src/CMSDIJET/DijetRootTreeAnalyzer 
-eval `scramv1 runtime -sh`
-./main config/lists_jan2015//QCD_Pt-300to470_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_trkalmb_castor_PHYS14_25_V1-v2__MINIAODSIM.txt config/cutFile_mainDijetSelection.txt dijets/events SmearingFunctions_RecoGen_AllSamples//rootfile_QCD_Pt-300to470_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_trkalmb_castor_PHYS14_25_V1-v2__MINIAODSIM SmearingFunctions_RecoGen_AllSamples//cutEfficiencyFile_QCD_Pt-300to470_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_trkalmb_castor_PHYS14_25_V1-v2__MINIAODSIM

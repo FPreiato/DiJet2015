@@ -1,5 +1,0 @@
-#!/bin/bash
-export SCRAM_ARCH=slc6_amd64_gcc481
-cd /cmshome/fpreiato/DiJet/test/CMSSW_7_2_1_DiJet/src/CMSDIJET/DijetRootTreeAnalyzer 
-eval `scramv1 runtime -sh`
-./main config//inputListJets_QCD_Pt-1400to1800.txt config/cutFile_mainDijetSelection.txt dijets/events output//rootfile_inputListJets_QCD_Pt-1400to1800 output//cutEfficiencyFile_inputListJets_QCD_Pt-1400to1800
