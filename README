@@ -30,7 +30,7 @@ Inside:
 
 1) Run a kind of MakeClass on file.root with nameTree
  
-                    ./scripts/make_rootNtupleClass.sh –f file.root –f nameTree
+                    ./scripts/make_rootNtupleClass.sh –f file.root –t nameTree
 
 EX:
 ./scripts/make_rootNtupleClass.sh –f /tmp/fpreiato/RSGravitonToQuarkQuark_kMpl01_M_3000_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_PHYS14_25_V1-v1__MINIAODSIM_10_1_t8g.root -t dijets/events
