@@ -117,19 +117,18 @@ void analysisClass::Loop()
      // Anche se calcolo le funzioni di smearing con un samples (ex Qstar) e faccio closuretest su un altro sample (ex Gravitone)
      // if( (int)jentry%2 == 0 ) continue;
 
-     cout<<" "<<endl;
-     cout<<"Evento numero "<<jentry<<endl;
+     // cout<<" "<<endl;
+     // cout<<"Evento numero "<<jentry<<endl;
 
      CreateAndFillUserTH1D("H_step_pt", 1000, 0. , 1000. , step_pt );
 
      if(Histogram_InitialObjects == true){
-       //studio su partoni e risonanza a livello generatore
+       // studio su partoni e risonanza a livello generatore
        double no_objects = gen_pt->size();
-       // cout<<"Numero di oggetti a livello generatore: "<<no_objects<<endl;     
-       
+       // cout<<"Numero di oggetti a livello generatore: "<<no_objects<<endl;            
        for(int nn=0; nn < no_objects; nn++){
-	 //cout<<"Object "<<nn<<endl;
-	 //cout<<"Pt: "<<gen_pt->at(nn)<< " Eta: "<<gen_eta->at(nn)<<" Phi: "<<gen_phi->at(nn)<<" M: "<<" pdgId: "<<gen_pdgId->at(nn)<<endl;
+	 // cout<<"Object "<<nn<<endl;
+	 // cout<<"Pt: "<<gen_pt->at(nn)<< " Eta: "<<gen_eta->at(nn)<<" Phi: "<<gen_phi->at(nn)<<" M: "<<" pdgId: "<<gen_pdgId->at(nn)<<endl;
       	 CreateAndFillUserTH1D("H_Objects_size", 6, -0.5, 5.5, no_objects );
 	 CreateAndFillUserTH1D("H_Objects_pdgId", 28, -5.5, 22.5, gen_pdgId->at(nn) );
 	 CreateAndFillUserTH1D("H_Objects_Eta", 100, -10, 10, gen_eta->at(nn) );
@@ -146,7 +145,7 @@ void analysisClass::Loop()
      double parton2_pdgId;
      TLorentzVector parton1, parton2;
      TLorentzVector diparton;
-
+     
      if(gen_pt->size() == 2){
        p1.SetPxPyPzE(gen_px->at(0) , gen_py->at(0) , gen_pz->at(0), gen_energy->at(0) );
        p1_pdgId = gen_pdgId -> at(0);
@@ -188,36 +187,32 @@ void analysisClass::Loop()
        parton1_pdgId = p2_pdgId;
        parton2_pdgId = p1_pdgId;
      }
+   
      if( parton1.Pt()<0 || parton2.Pt()<0 ) continue ;
-
-     //     -------------->>>>>>>     // test considerando solo i quark
-     // if(parton1_pdgId == 21 || parton2_pdgId == 21) cout<<"+++++++++++++++++++++++++++++++++++++++++++++ Butto evento con gluoni"<<endl;
-     // if(parton1_pdgId == 21 || parton2_pdgId == 21) continue;
      
-      cout<<"PARTONE 1"<<endl;
-      cout<<"Pt: "<<parton1.Pt()<< " Eta: "<<parton1.Eta()<<" Phi: "<<parton1.Phi()<<" M: "<<parton1.M()<<" pdgId: "<<parton1_pdgId<<endl;
-      cout<<"PARTONE 2"<<endl;
-      cout<<"Pt: "<<parton2.Pt()<< " Eta: "<<parton2.Eta()<<" Phi: "<<parton2.Phi()<<" M: "<<parton2.M()<<" pdgId: "<<parton2_pdgId<<endl;
+     // cout<<"PARTONE 1"<<endl;
+     // cout<<"Pt: "<<parton1.Pt()<< " Eta: "<<parton1.Eta()<<" Phi: "<<parton1.Phi()<<" M: "<<parton1.M()<<" pdgId: "<<parton1_pdgId<<endl;
+     // cout<<"PARTONE 2"<<endl;
+     // cout<<"Pt: "<<parton2.Pt()<< " Eta: "<<parton2.Eta()<<" Phi: "<<parton2.Phi()<<" M: "<<parton2.M()<<" pdgId: "<<parton2_pdgId<<endl;
      
      // Create dijet(reco) system
      diparton = parton1 + parton2;
      
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++ 
+     //+++++++++++++++++++++++++++++++++++++++++++++++++++ 
      //Livello gen : Ricostruisce i Gen_widejet partendo dai genjet_ak4
-     
      size_t no_Genjets_ak4 = jetPtGenAK4->size();
      TLorentzVector Genjet1, Genjet2;
      TLorentzVector Genwj1_tmp, Genwj2_tmp;
      TLorentzVector Genwj1, Genwj2;
      TLorentzVector Genwdijet;
      double GenwideJetDeltaR_ = getPreCutValue1("DeltaR");
- 
+     
      // if(no_Genjets_ak4 < 2) cout<<"# Genjet AK4 <2. Butto evento"<<endl;
      if(no_Genjets_ak4 < 2) continue;
      
      // cout<<"Costruisco GenWidejet"<<endl;
      // cout<<"Ciclo sui recojet AK4"<<endl;
-
+     
      //TLorentzVector Genjet1, Genjet2: costruisco Gen widejet attorno ai genjet a pT piu alto
      Genjet1.SetPtEtaPhiM(jetPtGenAK4->at(0), jetEtaGenAK4->at(0), jetPhiGenAK4->at(0), jetMassGenAK4->at(0) );
      Genjet2.SetPtEtaPhiM(jetPtGenAK4->at(1), jetEtaGenAK4->at(1), jetPhiGenAK4->at(1), jetMassGenAK4->at(1) );
@@ -225,16 +220,15 @@ void analysisClass::Loop()
      double dPhi = delta_phi(Genjet1.Phi(), Genjet2.Phi() );
      CreateAndFillUserTH1D("H_DeltaPhiLeadingGenJets", 50, 0. , 3.15 , dPhi);
      double n_genjet = 0;
-
+     
      for( Long64_t ijet=0;  ijet<no_Genjets_ak4;  ijet++){//genjet loop for ak4
- 
        TLorentzVector currentGenJet;
        currentGenJet.SetPtEtaPhiM(jetPtGenAK4->at(ijet), jetEtaGenAK4->at(ijet), jetPhiGenAK4->at(ijet), jetMassGenAK4->at(ijet) );   
- 
+       
        if( currentGenJet.Pt() > 30 && fabs(currentGenJet.Eta())< 2.5){
 	 n_genjet = n_genjet +1;
        }
-
+       
        // cout<<"Genjet numero "<<ijet<<endl;
        // cout<<"Pt: "<<currentGenJet.Pt()<<"          Eta: "<<currentGenJet.Eta()<<"         Phi: "<<currentGenJet.Phi()<<"         M: "<<currentGenJet.M()<<endl;
        
@@ -252,10 +246,10 @@ void analysisClass::Loop()
 	 Genwj2_tmp += currentGenJet;
        }
      }//end of ak4 loop
-
+     
      CreateAndFillUserTH1D("H_Number_Genjets", 31, -0.5 , 30.5 , n_genjet);
      
-     if( Genwj1_tmp.Pt() <0 || Genwj2_tmp.Pt() <0) cout<<"Pt GenWidejet <0"<<endl;
+     // if( Genwj1_tmp.Pt() <0 || Genwj2_tmp.Pt() <0) cout<<"Pt GenWidejet <0"<<endl;
      if( Genwj1_tmp.Pt() <0 || Genwj2_tmp.Pt() <0) continue;
      
      //associo i Gen widejets_tmp ai partoni
@@ -285,53 +279,45 @@ void analysisClass::Loop()
      CreateAndFillUserTH1D("H_DeltaR_GenWideJet1_Parton1", 100, 0. , 3. , DeltaR_GenWideJet1_parton1);
      CreateAndFillUserTH1D("H_DeltaR_GenWideJet2_Parton2", 100, 0. , 3. , DeltaR_GenWideJet2_parton2);     
      
-      cout<<"GenWideJet 1"<<endl;
-      cout<< "Pt: "<<Genwj1.Pt()<<"         Eta: "<< Genwj1.Eta()<<"         Phi: "<<Genwj1.Phi()<<"         M: "<<Genwj1.M()<<endl;
-      cout<<"GenWideJet 2"<<endl;
-      cout<< "Pt: "<<Genwj2.Pt()<<"         Eta: "<< Genwj2.Eta()<<"         Phi: "<<Genwj2.Phi()<<"         M: "<<Genwj2.M()<<endl;
-      
-      // Funzioni di smearing con i gen widejets nel range |eta|<2.5     
-      // if( fabs(Genwj1.Eta() ) > 2.5 || fabs(Genwj2.Eta() ) > 2.5) cout<<"Uno dei due GenWideJet e' fuori range in eta"<<endl;
-      if( fabs(Genwj1.Eta() ) > 2.5 || fabs(Genwj2.Eta() ) > 2.5) continue; //see
-      //aggiunto cut in pT
-      if( Genwj1.Pt() < 30 || Genwj2.Pt() < 30) continue; //see
-      
-      // Create dijet system
-      Genwdijet = Genwj1 + Genwj2;
-      
+     // cout<<"GenWideJet 1"<<endl;
+     // cout<< "Pt: "<<Genwj1.Pt()<<"         Eta: "<< Genwj1.Eta()<<"         Phi: "<<Genwj1.Phi()<<"         M: "<<Genwj1.M()<<endl;
+     // cout<<"GenWideJet 2"<<endl;
+     // cout<< "Pt: "<<Genwj2.Pt()<<"         Eta: "<< Genwj2.Eta()<<"         Phi: "<<Genwj2.Phi()<<"         M: "<<Genwj2.M()<<endl;
+     
+     // Funzioni di smearing con i gen widejets nel range |eta|<2.5     
+     // if( fabs(Genwj1.Eta() ) > 2.5 || fabs(Genwj2.Eta() ) > 2.5) cout<<"Uno dei due GenWideJet e' fuori range in eta"<<endl;
+     if( fabs(Genwj1.Eta() ) > 2.5 || fabs(Genwj2.Eta() ) > 2.5) continue; //see
+     //aggiunto cut in pT
+     if( Genwj1.Pt() < 30 || Genwj2.Pt() < 30) continue; //see
+     
+     // Create dijet system
+     Genwdijet = Genwj1 + Genwj2;
+     
      /////////////////////////////////////////////////////////
      //Livello reco : Ricostruisce i widejet partendo dai recojet_ak4
-      
-      size_t no_jets_ak4=jetPtAK4->size();    
-      TLorentzVector jet1, jet2;
-      TLorentzVector wj1_tmp, wj2_tmp;
-      TLorentzVector wj1, wj2; 
-      TLorentzVector wdijet;
-      double wideJetDeltaR_ = getPreCutValue1("DeltaR");
-      
-      // if(no_jets_ak4<2) cout<<"# recojet AK4 <2. Butto evento"<<endl;
-      if(no_jets_ak4<2) continue;
-      
-      //cout<<"Costruisco Widejet"<<endl;    
-      //cout<<"Ciclo sui recojet AK4"<<endl;
-      
-      //    TLorentzVector jet1, jet2: Costruisco reco widejet attorno ai jet a pT piu alto
-      jet1.SetPtEtaPhiM(jetPtAK4->at(0), jetEtaAK4->at(0), jetPhiAK4->at(0), jetMassAK4->at(0));
-      jet2.SetPtEtaPhiM(jetPtAK4->at(1), jetEtaAK4->at(1), jetPhiAK4->at(1), jetMassAK4->at(1));
+     size_t no_jets_ak4=jetPtAK4->size();    
+     TLorentzVector jet1, jet2;
+     TLorentzVector wj1_tmp, wj2_tmp;
+     TLorentzVector wj1, wj2; 
+     TLorentzVector wdijet;
+     double wideJetDeltaR_ = getPreCutValue1("DeltaR");
      
-     double n_jet = 0;
+     // if(no_jets_ak4<2) cout<<"# recojet AK4 <2. Butto evento"<<endl;
+     if(no_jets_ak4<2) continue;
+     
+     // cout<<"Costruisco Widejet"<<endl;    
+     // cout<<"Ciclo sui recojet AK4"<<endl;
+     
+     // TLorentzVector jet1, jet2: Costruisco reco widejet attorno ai jet a pT piu alto
+     jet1.SetPtEtaPhiM(jetPtAK4->at(0), jetEtaAK4->at(0), jetPhiAK4->at(0), jetMassAK4->at(0));
+     jet2.SetPtEtaPhiM(jetPtAK4->at(1), jetEtaAK4->at(1), jetPhiAK4->at(1), jetMassAK4->at(1));
      
      for(Long64_t ijet=0; ijet<no_jets_ak4; ijet++){ //jet loop for ak4
-       
        TLorentzVector currentJet;
        currentJet.SetPtEtaPhiM(jetPtAK4->at(ijet), jetEtaAK4->at(ijet), jetPhiAK4->at(ijet), jetMassAK4->at(ijet));   
        
        // cout<<"Jet numero "<<ijet<<endl;
        // cout<<"Pt: "<<currentJet.Pt()<<"         Eta: "<<currentJet.Eta()<<"          Phi: "<<currentJet.Phi()<<"         M: "<<currentJet.M()<<endl;
-
-       if( currentJet.Pt() > 30 && fabs(currentJet.Eta())< 2.5){
-	 n_jet = n_jet +1;
-       }
        
        double DeltaR1 = currentJet.DeltaR(jet1);
        double DeltaR2 = currentJet.DeltaR(jet2);
@@ -347,8 +333,6 @@ void analysisClass::Loop()
 	 wj2_tmp += currentJet;
        }			 
      } //end of ak4 jet loop		     
-     
-     CreateAndFillUserTH1D("H_Number_Recojets", 31, -0.5 , 30.5 , n_jet);
      
      // if( wj1_tmp.Pt()<0 || wj2_tmp.Pt()<0 ) cout<<"Pt Widejet <0"<<endl;;
      if( wj1_tmp.Pt()<0 || wj2_tmp.Pt()<0 ) continue;
@@ -370,14 +354,14 @@ void analysisClass::Loop()
        wj2 = wj1_tmp; 
      }
      
-     //check the spatial resolution - Widejet-parton
+     // check the spatial resolution - Widejet-parton
      // double Eta_difference_Widejet1_parton1 = wj1.Eta() - parton1.Eta();
      // double Phi_difference_Widejet1_parton1 = wj1.Phi() - parton1.Phi() ;
      // double DeltaR_WideJet1_parton1            = wj1.DeltaR(parton1);
      // double Eta_difference_Widejet2_parton2 = wj2.Eta() - parton2.Eta() ;
      // double Phi_difference_Widejet2_parton2 = wj2.Phi() - parton2.Phi() ;
      // double DeltaR_WideJet2_parton2            = wj2.DeltaR(parton2);
-
+     
      // cout<< "DeltaR tra widejet 1 e partone 1 = "<<DeltaR_WideJet1_parton1<<endl;
      // cout<< "DeltaR tra widejet 2 e partone 2 = "<<DeltaR_WideJet2_parton2<<endl;
      
@@ -405,7 +389,7 @@ void analysisClass::Loop()
      // Create dijet system
      wdijet = wj1 + wj2;
 
-     // UTILITY For SMEARING FUNCTIONS
+     // TOOLS For SMEARING FUNCTIONS
      double DeltaR_WideJet1_GenWideJet1 = wj1.DeltaR(Genwj1);     
      double DeltaR_WideJet2_GenWideJet2 = wj2.DeltaR(Genwj2);         
      // cout<< "DeltaR tra widejet 1 e Genwidejet 1 = "<<DeltaR_WideJet1_GenWideJet1<<endl;
@@ -438,163 +422,155 @@ void analysisClass::Loop()
      // if( fabs(GenWideJet_Eta[0] ) >=0.5 || fabs( GenWideJet_Eta[1] ) >= 0.5) continue;
      // if( GenWideJet_Pt[0] <1400 || GenWideJet_Pt[0] >=1600) continue;
      // if( GenWideJet_Pt[1] <1400 || GenWideJet_Pt[1] >=1600) continue;
-
+     
      // cout<<"CALCOLO LE FUNZIONI DI SMEARING on GenWideJet"<<endl;
      for(int kk=0; kk<2; kk++){//ciclo sui GenWideJets
-       
        if(kk == 0) CreateAndFillUserTH1D("H_DeltaR_Totale", 100, 0. , 0.4 , DeltaR_WideJet1_GenWideJet1);
        if(kk == 1) CreateAndFillUserTH1D("H_DeltaR_Totale", 100, 0. , 0.4 , DeltaR_WideJet2_GenWideJet2);
        
        // cout<<"GenWideJet "<< kk+1<<endl;
        // cout<<"Pt: "<<GenWideJet_Pt[kk]<<"         |Eta|: "<< fabs(GenWideJet_Eta[kk])<<endl;
        
-      for(int ii=0; ii<5; ii++){	  
-	double eta_bin_min = ii/2.;       
-	double eta_bin_max = ii/2. +0.5;
-	
-	if( fabs(GenWideJet_Eta[kk]) >=eta_bin_min && fabs(GenWideJet_Eta[kk]) < eta_bin_max){	    
-	  
-	  // cout<<"Passed bin in eta"<<endl;	
-	  // cout << "eta_bin: "<< eta_bin_min <<" - "<<eta_bin_max << endl;
-	  
-	  for(int jj=0; jj<n_bin ; jj++){	 	      
-	    int pt_bin_min = ( (jj-1)*step_pt)+step_pt;
-	    int pt_bin_max = (jj*step_pt)+step_pt;
-	    
-	    if(GenWideJet_Pt[kk] >=pt_bin_min && GenWideJet_Pt[kk] < pt_bin_max){ 
-	      
-	      // cout<<"Passed bin in pt"<<endl;
-	      // cout << "pt_bin: "<< pt_bin_min <<" - "<<pt_bin_max<< endl;
-	      
-	      if(Parton_pdgId[kk] == 21){ 
-		sprintf(HistoName,"Histo_RGluons_WideJet_GenWideJet_%d_%d",ii,pt_bin_max);
-	      }
-	      if( fabs(Parton_pdgId[kk]) == 1){ 
-		sprintf(HistoName,"Histo_RQuarkDOWN_WideJet_GenWideJet_%d_%d",ii,pt_bin_max);
-	      }
-	      if( fabs(Parton_pdgId[kk]) == 2){ 
-		sprintf(HistoName,"Histo_RQuarkUP_WideJet_GenWideJet_%d_%d",ii,pt_bin_max);
-	      }
-	      if( fabs(Parton_pdgId[kk]) == 3){ 
-		sprintf(HistoName,"Histo_RQuarkSTRANGE_WideJet_GenWideJet_%d_%d",ii,pt_bin_max);
-	      }
-	      if( fabs(Parton_pdgId[kk]) == 4){ 
-		sprintf(HistoName,"Histo_RQuarkCHARM_WideJet_GenWideJet_%d_%d",ii,pt_bin_max);
-	      }
-	      if( fabs(Parton_pdgId[kk]) == 5){ 
-		sprintf(HistoName,"Histo_RQuarkBOTTOM_WideJet_GenWideJet_%d_%d",ii,pt_bin_max);
-	      }
-	    
-	      CreateAndFillUserTH1D(HistoName, histo_bin, xmin, xmax, R_PtWidejet_PtGenWideJet[kk] );
-	      cout<<"Riempio TH1D "<<HistoName<<" con R: "<<R_PtWidejet_PtGenWideJet[kk]<<endl;
-	      
-	    }//if parton_Pt
-	  }//ciclo sui bin in pT
-	}//if parton_Eta
-      }//ciclo sui bin di eta
+       for(int ii=0; ii<5; ii++){	  
+	 double eta_bin_min = ii/2.;       
+	 double eta_bin_max = ii/2. +0.5;
+	 
+	 if( fabs(GenWideJet_Eta[kk]) >=eta_bin_min && fabs(GenWideJet_Eta[kk]) < eta_bin_max){	    
+	   
+	   // cout<<"Passed bin in eta"<<endl;	
+	   // cout << "eta_bin: "<< eta_bin_min <<" - "<<eta_bin_max << endl;
+	   
+	   for(int jj=0; jj<n_bin ; jj++){	 	      
+	     int pt_bin_min = ( (jj-1)*step_pt)+step_pt;
+	     int pt_bin_max = (jj*step_pt)+step_pt;
+	     
+	     if(GenWideJet_Pt[kk] >=pt_bin_min && GenWideJet_Pt[kk] < pt_bin_max){ 
+	       
+	       // cout<<"Passed bin in pt"<<endl;
+	       // cout << "pt_bin: "<< pt_bin_min <<" - "<<pt_bin_max<< endl;
+	       
+	       if(Parton_pdgId[kk] == 21){ 
+		 sprintf(HistoName,"Histo_RGluons_WideJet_GenWideJet_%d_%d",ii,pt_bin_max);
+	       }
+	       if( fabs(Parton_pdgId[kk]) == 1){ 
+		 sprintf(HistoName,"Histo_RQuarkDOWN_WideJet_GenWideJet_%d_%d",ii,pt_bin_max);
+	       }
+	       if( fabs(Parton_pdgId[kk]) == 2){ 
+		 sprintf(HistoName,"Histo_RQuarkUP_WideJet_GenWideJet_%d_%d",ii,pt_bin_max);
+	       }
+	       if( fabs(Parton_pdgId[kk]) == 3){ 
+		 sprintf(HistoName,"Histo_RQuarkSTRANGE_WideJet_GenWideJet_%d_%d",ii,pt_bin_max);
+	       }
+	       if( fabs(Parton_pdgId[kk]) == 4){ 
+		 sprintf(HistoName,"Histo_RQuarkCHARM_WideJet_GenWideJet_%d_%d",ii,pt_bin_max);
+	       }
+	       if( fabs(Parton_pdgId[kk]) == 5){ 
+		 sprintf(HistoName,"Histo_RQuarkBOTTOM_WideJet_GenWideJet_%d_%d",ii,pt_bin_max);
+	       }
+	       
+	       CreateAndFillUserTH1D(HistoName, histo_bin, xmin, xmax, R_PtWidejet_PtGenWideJet[kk] );
+	       // cout<<"Riempio TH1D "<<HistoName<<" con R: "<<R_PtWidejet_PtGenWideJet[kk]<<endl;
+	       
+	     }//if parton_Pt
+	   }//ciclo sui bin in pT
+	 }//if parton_Eta
+       }//ciclo sui bin di eta
      }//ciclo sui partoni
      
-
-    ///////////////////////////////////////////////////////////////////////////////////////////
-    //Riempio tutti gli istogrammi qua
+     ///////////////////////////////////////////////////////////////////////////////////////////
+     //Riempio tutti gli istogrammi qua
+     
+     //Partoni
+     CreateAndFillUserTH1D("H_parton1_Pt", 1000, 0. , 10000. , parton1.Pt() );
+     CreateAndFillUserTH1D("H_parton1_Eta", 100, -4. , 4. , parton1.Eta() );
+     CreateAndFillUserTH1D("H_parton1_Phi", 100, -4. , 4. , parton1.Phi() );
+     CreateAndFillUserTH1D("H_parton1_M", 50000, 0. , 10000. , parton1.M() );
+     CreateAndFillUserTH1D("H_parton1_pdgId", 35, -9.5 , 25.5 , parton1_pdgId );
+     CreateAndFillUserTH1D("H_parton2_Pt", 1000, 0. , 10000. , parton2.Pt() );
+     CreateAndFillUserTH1D("H_parton2_Eta", 100, -4. , 4. , parton2.Eta() );  
+     CreateAndFillUserTH1D("H_parton2_Phi", 100, -4. , 4. , parton2.Phi() );
+     CreateAndFillUserTH1D("H_parton2_M", 50000, 0. , 10000. , parton2.M() );
+     CreateAndFillUserTH1D("H_parton2_pdgId", 35, -9.5 , 25.5 , parton2_pdgId );
+     CreateAndFillUserTH1D("H_diparton_Pt", 1000, 0. , 10000. , diparton.Pt() );
+     // I sample di QCD sono bilanciati bene
+     // CreateAndFillUserTH1D("H_diparton_Eta", 100, -4. , 4. , diparton.Eta() );
+     CreateAndFillUserTH1D("H_diparton_Phi", 100, -4. , 4. , diparton.Phi() );
+     CreateAndFillUserTH1D("H_diparton_M", 1000, 0. , 10000. , diparton.M() );
+     //Gen WideJet
+     CreateAndFillUserTH1D("H_GenWideJet1_Pt", 1000, 0. , 10000. , Genwj1.Pt()); 
+     CreateAndFillUserTH1D("H_GenWideJet1_Eta", 100, -4. , 4. , Genwj1.Eta()); 
+     CreateAndFillUserTH1D("H_GenWideJet1_Phi", 100, -4. , 4. , Genwj1.Phi());
+     CreateAndFillUserTH1D("H_GenWideJet1_M", 1000, 0. , 10000. , Genwj1.M());  
+     CreateAndFillUserTH1D("H_GenWideJet2_Pt", 1000, 0. , 10000. , Genwj2.Pt()); 
+     CreateAndFillUserTH1D("H_GenWideJet2_Eta", 100, -4. , 4. , Genwj2.Eta()); 
+     CreateAndFillUserTH1D("H_GenWideJet2_Phi", 100, -4. , 4. , Genwj2.Phi());
+     CreateAndFillUserTH1D("H_GenWideJet2_M", 1000, 0. , 10000. , Genwj2.M());  
+     //Variabili del sistema Gen Dijet Wide	   
+     CreateAndFillUserTH1D("H_GendijetWide_Pt", 1000, 0. , 10000. , Genwdijet.Pt() );
+     CreateAndFillUserTH1D("H_GendijetWide_Eta", 100, -4. , 4. , Genwdijet.Eta() );
+     CreateAndFillUserTH1D("H_GendijetWide_Phi", 100, -4. , 4. , Genwdijet.Phi() );
+     CreateAndFillUserTH1D("H_GendijetWide_M", 1000, 0. , 10000. , Genwdijet.M() );
+     // Reco WideJet
+     CreateAndFillUserTH1D("H_WideJet1_Pt", 1000, 0. , 10000. , wj1.Pt()); 
+     CreateAndFillUserTH1D("H_WideJet1_Eta", 100, -4. , 4. , wj1.Eta()); 
+     CreateAndFillUserTH1D("H_WideJet1_Phi", 100, -4. , 4. , wj1.Phi());
+     CreateAndFillUserTH1D("H_WideJet1_M", 1000, 0. , 10000. , wj1.M());  
+     CreateAndFillUserTH1D("H_WideJet2_Pt", 1000, 0. , 10000. , wj2.Pt()); 
+     CreateAndFillUserTH1D("H_WideJet2_Eta", 100, -4. , 4. , wj2.Eta()); 
+     CreateAndFillUserTH1D("H_WideJet2_Phi", 100, -4. , 4. , wj2.Phi());
+     CreateAndFillUserTH1D("H_WideJet2_M", 1000, 0. , 10000. , wj2.M());  
+     //Variabili del sistema Reco Dijet Wide	   
+     CreateAndFillUserTH1D("H_dijetWide_Pt", 1000, 0. , 10000. , wdijet.Pt() );
+     CreateAndFillUserTH1D("H_dijetWide_Eta", 100, -4. , 4. , wdijet.Eta() );
+     CreateAndFillUserTH1D("H_dijetWide_Phi", 100, -4. , 4. , wdijet.Phi() );
+     CreateAndFillUserTH1D("H_dijetWide_M", 1000, 0. , 10000. , wdijet.M() );
+     
+     //== Fill Variables ==
     
-    //Partoni
-    CreateAndFillUserTH1D("H_parton1_Pt", 1000, 0. , 10000. , parton1.Pt() );
-    CreateAndFillUserTH1D("H_parton1_Eta", 100, -4. , 4. , parton1.Eta() );
-    CreateAndFillUserTH1D("H_parton1_Phi", 100, -4. , 4. , parton1.Phi() );
-    CreateAndFillUserTH1D("H_parton1_M", 50000, 0. , 10000. , parton1.M() );
-    CreateAndFillUserTH1D("H_parton1_pdgId", 35, -9.5 , 25.5 , parton1_pdgId );
-    CreateAndFillUserTH1D("H_parton2_Pt", 1000, 0. , 10000. , parton2.Pt() );
-    CreateAndFillUserTH1D("H_parton2_Eta", 100, -4. , 4. , parton2.Eta() );  
-    CreateAndFillUserTH1D("H_parton2_Phi", 100, -4. , 4. , parton2.Phi() );
-    CreateAndFillUserTH1D("H_parton2_M", 50000, 0. , 10000. , parton2.M() );
-    CreateAndFillUserTH1D("H_parton2_pdgId", 35, -9.5 , 25.5 , parton2_pdgId );
-    CreateAndFillUserTH1D("H_diparton_Pt", 1000, 0. , 10000. , diparton.Pt() );
-    // I sample di QCD sono bilanciati bene
-    // CreateAndFillUserTH1D("H_diparton_Eta", 100, -4. , 4. , diparton.Eta() );
-    CreateAndFillUserTH1D("H_diparton_Phi", 100, -4. , 4. , diparton.Phi() );
-    CreateAndFillUserTH1D("H_diparton_M", 1000, 0. , 10000. , diparton.M() );
-    //Gen WideJet
-    CreateAndFillUserTH1D("H_GenWideJet1_Pt", 1000, 0. , 10000. , Genwj1.Pt()); 
-    CreateAndFillUserTH1D("H_GenWideJet1_Eta", 100, -4. , 4. , Genwj1.Eta()); 
-    CreateAndFillUserTH1D("H_GenWideJet1_Phi", 100, -4. , 4. , Genwj1.Phi());
-    CreateAndFillUserTH1D("H_GenWideJet1_M", 1000, 0. , 10000. , Genwj1.M());  
-    CreateAndFillUserTH1D("H_GenWideJet2_Pt", 1000, 0. , 10000. , Genwj2.Pt()); 
-    CreateAndFillUserTH1D("H_GenWideJet2_Eta", 100, -4. , 4. , Genwj2.Eta()); 
-    CreateAndFillUserTH1D("H_GenWideJet2_Phi", 100, -4. , 4. , Genwj2.Phi());
-    CreateAndFillUserTH1D("H_GenWideJet2_M", 1000, 0. , 10000. , Genwj2.M());  
-    //Variabili del sistema Gen Dijet Wide	   
-    CreateAndFillUserTH1D("H_GendijetWide_Pt", 1000, 0. , 10000. , Genwdijet.Pt() );
-    CreateAndFillUserTH1D("H_GendijetWide_Eta", 100, -4. , 4. , Genwdijet.Eta() );
-    CreateAndFillUserTH1D("H_GendijetWide_Phi", 100, -4. , 4. , Genwdijet.Phi() );
-    CreateAndFillUserTH1D("H_GendijetWide_M", 1000, 0. , 10000. , Genwdijet.M() );
-    // Reco WideJet
-    CreateAndFillUserTH1D("H_WideJet1_Pt", 1000, 0. , 10000. , wj1.Pt()); 
-    CreateAndFillUserTH1D("H_WideJet1_Eta", 100, -4. , 4. , wj1.Eta()); 
-    CreateAndFillUserTH1D("H_WideJet1_Phi", 100, -4. , 4. , wj1.Phi());
-    CreateAndFillUserTH1D("H_WideJet1_M", 1000, 0. , 10000. , wj1.M());  
-    CreateAndFillUserTH1D("H_WideJet2_Pt", 1000, 0. , 10000. , wj2.Pt()); 
-    CreateAndFillUserTH1D("H_WideJet2_Eta", 100, -4. , 4. , wj2.Eta()); 
-    CreateAndFillUserTH1D("H_WideJet2_Phi", 100, -4. , 4. , wj2.Phi());
-    CreateAndFillUserTH1D("H_WideJet2_M", 1000, 0. , 10000. , wj2.M());  
-    //Variabili del sistema Reco Dijet Wide	   
-    CreateAndFillUserTH1D("H_dijetWide_Pt", 1000, 0. , 10000. , wdijet.Pt() );
-    CreateAndFillUserTH1D("H_dijetWide_Eta", 100, -4. , 4. , wdijet.Eta() );
-    CreateAndFillUserTH1D("H_dijetWide_Phi", 100, -4. , 4. , wdijet.Phi() );
-    CreateAndFillUserTH1D("H_dijetWide_M", 1000, 0. , 10000. , wdijet.M() );
-    //////////////////////////////////////////////////////////////////////////////////////
-
-    //== Fill Variables ==
-    
-    fillVariableWithValue("run",runNo);     
-    fillVariableWithValue("event",evtNo);     
-    fillVariableWithValue("lumi",lumi);     
-    fillVariableWithValue("nVtx",nvtx);     
-    //     fillVariableWithValue("nJet",widejets.size());
-    
-    // Trigger
-    int NtriggerBits = triggerResult->size();
-    if( NtriggerBits > 0)
-      fillVariableWithValue("passHLT",triggerResult->at(0));// HLT_PFHT900_v*    
-    
-    if( no_jets_ak4 >=1 )
-      fillVariableWithValue("IdTight_j1",idTAK4->at(0));
-    
-    if( no_jets_ak4 >=2 )
+     fillVariableWithValue("run",runNo);     
+     fillVariableWithValue("event",evtNo);     
+     fillVariableWithValue("lumi",lumi);     
+     fillVariableWithValue("nVtx",nvtx);     
+     //     fillVariableWithValue("nJet",widejets.size());
+     
+     // Trigger
+     int NtriggerBits = triggerResult->size();
+     if( NtriggerBits > 0)
+       fillVariableWithValue("passHLT",triggerResult->at(0));// HLT_PFHT900_v*    
+     if( no_jets_ak4 >=1 )
+       fillVariableWithValue("IdTight_j1",idTAK4->at(0));
+     if( no_jets_ak4 >=2 )
        fillVariableWithValue("IdTight_j2",idTAK4->at(1));
-
      //     if( widejets.size() >= 1 )
      //{
-         fillVariableWithValue( "pT_j1", wj1.Pt() );
-         fillVariableWithValue( "eta_j1", wj1.Eta());
-
-	 //no cuts on these variables, just to store in output
-         fillVariableWithValue( "phi_j1", wj1.Phi());
-         fillVariableWithValue( "neutrHadEnFrac_j1", jetNhfAK4->at(0));
-         fillVariableWithValue( "chargedHadEnFrac_j1", jetChfAK4->at(0));
-         fillVariableWithValue( "photonEnFrac_j1", jetPhfAK4->at(0));
-         fillVariableWithValue( "eleEnFract_j1", jetElfAK4->at(0));
-         fillVariableWithValue( "muEnFract_j1", jetMufAK4->at(0));
-	 //}
-
-	 //     if( widejets.size() >= 2 )
-	 //{
-         fillVariableWithValue( "pT_j2", wj2.Pt() );
-         fillVariableWithValue( "eta_j2", wj2.Eta());
-	 //	 fillVariableWithValue( "deltaETAjj", DeltaEtaJJWide ) ;
-         fillVariableWithValue( "mjj", wdijet.M() ) ;
-
-	 //no cuts on these variables, just to store in output
-         fillVariableWithValue( "phi_j2", wj2.Phi());	
-         fillVariableWithValue( "neutrHadEnFrac_j2", jetNhfAK4->at(1));
-         fillVariableWithValue( "chargedHadEnFrac_j2", jetChfAK4->at(1));
-         fillVariableWithValue( "photonEnFrac_j2", jetPhfAK4->at(1));
-         fillVariableWithValue( "eleEnFract_j2", jetElfAK4->at(1));
-         fillVariableWithValue( "muEnFract_j2", jetMufAK4->at(1));
-	 //	 fillVariableWithValue( "deltaPHIjj", DeltaPhiJJWide ) ;
-
-	 //       }
-
+     fillVariableWithValue( "pT_j1", wj1.Pt() );
+     fillVariableWithValue( "eta_j1", wj1.Eta());
+     //no cuts on these variables, just to store in output
+     fillVariableWithValue( "phi_j1", wj1.Phi());
+     fillVariableWithValue( "neutrHadEnFrac_j1", jetNhfAK4->at(0));
+     fillVariableWithValue( "chargedHadEnFrac_j1", jetChfAK4->at(0));
+     fillVariableWithValue( "photonEnFrac_j1", jetPhfAK4->at(0));
+     fillVariableWithValue( "eleEnFract_j1", jetElfAK4->at(0));
+     fillVariableWithValue( "muEnFract_j1", jetMufAK4->at(0));
+     //}
+     
+     //     if( widejets.size() >= 2 )
+     //{
+     fillVariableWithValue( "pT_j2", wj2.Pt() );
+     fillVariableWithValue( "eta_j2", wj2.Eta());
+     //	 fillVariableWithValue( "deltaETAjj", DeltaEtaJJWide ) ;
+     fillVariableWithValue( "mjj", wdijet.M() ) ;
+     
+     //no cuts on these variables, just to store in output
+     fillVariableWithValue( "phi_j2", wj2.Phi());	
+     fillVariableWithValue( "neutrHadEnFrac_j2", jetNhfAK4->at(1));
+     fillVariableWithValue( "chargedHadEnFrac_j2", jetChfAK4->at(1));
+     fillVariableWithValue( "photonEnFrac_j2", jetPhfAK4->at(1));
+     fillVariableWithValue( "eleEnFract_j2", jetElfAK4->at(1));
+     fillVariableWithValue( "muEnFract_j2", jetMufAK4->at(1));
+     //	 fillVariableWithValue( "deltaPHIjj", DeltaPhiJJWide ) ;
+     //       }
+     
      //no cuts on these variables, just to store in output
      fillVariableWithValue("trueVtx",PileupInteractions->at(12));
      fillVariableWithValue("MET",met);
@@ -602,7 +578,7 @@ void analysisClass::Loop()
      fillVariableWithValue("METoverHTAK4",METoverHTAK4);
      fillVariableWithValue("HTAK4",htAK4);
      fillVariableWithValue("ptHat",ptHat);
-
+     
      // Evaluate cuts (but do not apply them)
      evaluateCuts();
      
@@ -623,12 +599,10 @@ void analysisClass::Loop()
 	 //     CreateAndFillUserTH1D("h_htak4_mjjgt4000", 1000, 0, 10000, getVariableValue("HTAK4"));
 	 //     CreateAndFillUserTH1D("h_nvtx_mjjgt4000", 31, -0.5, 30.5, getVariableValue("nVtx"));
 	 //   }
-
+	 
        }
    
- 
- 
-    // ===== Example of mjj spectrum after HLT selection =====
+     // ===== Example of mjj spectrum after HLT selection =====
      // if( passedAllPreviousCuts("mjj") )
      //   {
      // 	 if(getVariableValue("passHLT")>0)
@@ -685,7 +659,7 @@ void analysisClass::Loop()
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
 }
 
-////////////////////////////////////////////////////////////////////////
+///////////////////////////////////   ROBA VECCHIA
 
 // rapporto con i genjet AK4/AK8 non servono piu perche abbiamo visto che hanno una risoluzione peggiore rispetto ai widejet
 // sia generatore che reco non servono
