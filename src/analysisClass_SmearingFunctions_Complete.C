@@ -114,21 +114,21 @@ void analysisClass::Loop()
      CreateAndFillUserTH1D("H_step_pt", 1000, 0. , 1000. , step_pt );
 
      if(Histogram_InitialObjects == true){
-     //studio su partoni e risonanza a livello generatore
-     double no_objects = gen_pt->size();
-     cout<<"Numero di oggetti a livello generatore: "<<no_objects<<endl;     
-
-     for(int nn=0; nn < no_objects; nn++){
-
-       cout<<"Object "<<nn<<endl;
-       cout<<"Pt: "<<gen_pt->at(nn)<< " Eta: "<<gen_eta->at(nn)<<" Phi: "<<gen_phi->at(nn)<<" M: "<<" pdgId: "<<gen_pdgId->at(nn)<<endl;
+       //studio su partoni e risonanza a livello generatore
+       double no_objects = gen_pt->size();
+       cout<<"Numero di oggetti a livello generatore: "<<no_objects<<endl;     
        
-       CreateAndFillUserTH1D("H_Objects_size", 6, -0.5, 5.5, no_objects );
-       CreateAndFillUserTH1D("H_Objects_pdgId", 50, -4, 4, gen_pdgId->at(nn) );
-       CreateAndFillUserTH1D("H_Objects_Eta", 100, -10, 10, gen_eta->at(nn) );
-       CreateAndFillUserTH1D("H_Objects_Pt", 100, 0, 2000, gen_pt->at(nn) );
-       CreateAndFillUserTH1D("H_Objects_Phi", 50, -4, 4, gen_phi->at(nn) );
-     }
+       for(int nn=0; nn < no_objects; nn++){
+	 
+	 cout<<"Object "<<nn<<endl;
+	 cout<<"Pt: "<<gen_pt->at(nn)<< " Eta: "<<gen_eta->at(nn)<<" Phi: "<<gen_phi->at(nn)<<" M: "<<" pdgId: "<<gen_pdgId->at(nn)<<endl;
+	 
+	 CreateAndFillUserTH1D("H_Objects_size", 6, -0.5, 5.5, no_objects );
+	 CreateAndFillUserTH1D("H_Objects_pdgId", 50, -4, 4, gen_pdgId->at(nn) );
+	 CreateAndFillUserTH1D("H_Objects_Eta", 100, -10, 10, gen_eta->at(nn) );
+	 CreateAndFillUserTH1D("H_Objects_Pt", 100, 0, 2000, gen_pt->at(nn) );
+	 CreateAndFillUserTH1D("H_Objects_Phi", 50, -4, 4, gen_phi->at(nn) );
+       }
      }
 
      // Parton Level: definisco i partoni prodotti dalla risonanza
