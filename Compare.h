@@ -75,7 +75,36 @@ void DrawAndSave(const char *output_dir, const char *nameFile ,TH1D* h1, TH1D* h
   canvas ->SaveAs(nameSaved);
   canvas ->Destructor();
 }
-
+///////////////////////////////////////////////
+//Disegnare e salvare il confronto tra due istogrammi
+void DrawAndSave(const char *output_dir, const char *nameFile ,TH1D* h1, TH1D* h2, int xmin, int xmax, const char *XTitle, const char *YTitle, int h1Color, int h2Color){
+   
+  char * nameSaved ;
+  nameSaved = new char[strlen(output_dir) + strlen(nameFile) +20] ;
+  //copio stringa 1 in stringa nuova  
+  strcpy(nameSaved, output_dir);
+  //unisco szStringa3 con szStinga2
+  strcat(nameSaved, nameFile);
+  
+  TCanvas *canvas = new TCanvas("canvas","",800,800);
+  h1->SetStats(0);
+  h1->SetTitle(" ");
+  h1->SetXTitle(XTitle);
+  h1->GetXaxis()->SetRangeUser(xmin,xmax);
+  h1->SetYTitle(YTitle);
+  h1    -> GetYaxis()->SetTitleOffset(1.55);
+  h1->SetLineColor(h1Color);
+  h1->SetMarkerColor(h1Color);
+  h1->SetMarkerStyle(2);
+  h2->SetLineColor(h2Color);
+  h2->SetMarkerColor(h2Color);
+  h2->SetMarkerStyle(3);
+  h1->Draw();
+  h2->Draw("same");
+  //  leg->Draw();
+  canvas ->SaveAs(nameSaved);
+  canvas ->Destructor();
+  }
 ///////////////////////////////////
 //Disegnare e salvare il confronto tra 4 istogrammi
 void DrawAndSave(const char *output_dir, const char *nameFile ,TH1D* h1, TH1D* h2, TH1D *h3, TH1D *h4, int xmin, int xmax, const char *XTitle, const char *YTitle, TLegend* leg){
@@ -105,9 +134,7 @@ void DrawAndSave(const char *output_dir, const char *nameFile ,TH1D* h1, TH1D* h
 
 ///////////////////////////////////
 //Disegnare e salvare il confronto tra due istogrammi con il rapporto sotto
-
   void DrawRatioAndSave(const char *output_dir, const char *nameFile,  TH1D* h1, TH1D* h2, int xmin, int xmax, const char *XTitle, const char *YTitle, TLegend *leg){
-
     char * nameSaved ;
     nameSaved = new char[strlen(output_dir) + strlen(nameFile) +20] ;
     //copio stringa 1 in stringa nuova  
@@ -126,13 +153,19 @@ void DrawAndSave(const char *output_dir, const char *nameFile ,TH1D* h1, TH1D* h
     h1 -> GetYaxis()->SetTitleOffset(1.55);
     h1 -> SetLineColor(kBlue);
     h1 -> SetMinimum(-0.001);
-    //h1 -> SetMaximum(0.12);
+    double ymax;
+    if (h1->GetMaximum() > h2->GetMaximum() ) ymax = h1->GetMaximum() ; 
+    if (h2->GetMaximum() > h1->GetMaximum() ) ymax = h2->GetMaximum() ; 
+    h1 -> SetMaximum(ymax+200);
     h1 -> GetXaxis()->SetRangeUser(xmin,xmax);
     // h1 -> SetMinimum(-0.001);
     h2 ->SetLineColor(kRed);
     h1 ->Draw();               // Draw h1
     h2 ->Draw("same");         // Draw h2 on top of h1
-    // lower plot will be in pad
+
+
+    leg -> Draw();   
+ // lower plot will be in pad
     c->cd();          // Go back to the main canvas before defining pad2
     TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 1, 0.3);
     pad2->SetTopMargin(0);
@@ -144,8 +177,8 @@ void DrawAndSave(const char *output_dir, const char *nameFile ,TH1D* h1, TH1D* h
     TH1D *h3 = (TH1D*)h2->Clone("h3");
     h3->Divide(h1);
     h3->SetLineColor(kBlack);
-    h3->SetMinimum(0);  // Define Y ..
-    h3->SetMaximum(5); // .. range
+    h3->SetMinimum(0.5);  // Define Y ..
+    h3->SetMaximum(1.5); // .. range
     //   h3->Sumw2();
     h3->SetStats(0);      // No statistics on lower plot
     h3->SetTitle(""); // Remove the ratio title
@@ -232,6 +265,10 @@ void DrawPullAndSave(const char *output_dir, const char *nameFile, TH1D* h1, TH1
     h1 -> GetYaxis()->SetTitleOffset(1.55);
     h1 -> SetLineColor(kBlue);
     h1 -> SetMinimum(-0.01);
+    double ymax;
+    if (h1->GetMaximum() > h2->GetMaximum() ) ymax = h1->GetMaximum() ; 
+    if (h2->GetMaximum() > h1->GetMaximum() ) ymax = h2->GetMaximum() ; 
+    h1 -> SetMaximum(ymax+200);
     h1 -> GetXaxis()->SetRangeUser(xmin,xmax);
     h2 ->SetLineColor(kRed);
     h1 ->Draw();             
