@@ -97,12 +97,7 @@ int main(int argc, char* argv[]) {
   // Normalizer(H_DijetSmeared_M);
   // Normalizer(H_dijetWide_M);
     
-  TLegend *leg1 = new TLegend( 0.9, 0.9, 0.6, 0.6);
-  leg1 -> SetHeader("Pt:");
-  leg1 -> AddEntry(H_dijetWide_M, "WideJet1 MC", "L");
-  leg1 -> AddEntry(H_DijetSmeared_M, "WideJet1 Mio ", "L");
-
-    DrawPullAndSave(directory_output, "Histo_WithPull.png", H_dijetWide_M, H_DijetSmeared_M, 1500,4000, "M [GeV]", "Events", leg1 );
+ 
 
   ///////////////////////////////////////////////////////////////////////////////////
 
@@ -110,7 +105,7 @@ int main(int argc, char* argv[]) {
 
   if(Comparison == true){
 
-  TLegend *leg2 = new TLegend( 0.9, 0.9, 0.6, 0.6);
+  TLegend *leg2 = new TLegend( 0.1, 0.9, 0.4, 0.6);
   leg2 -> SetHeader("Variable:");
   leg2 -> AddEntry(H_dijetWide_M, "Reco WideJet", "L");
   leg2 -> AddEntry(H_DijetSmeared_M, "Jet Smeared ", "L");
@@ -130,6 +125,9 @@ int main(int argc, char* argv[]) {
   DrawRatioAndSave(directory_output, "Compare_Dijet_Eta.png",  H_dijetWide_Eta,   H_DijetSmeared_Eta, -4, 4, "#eta", "Events", leg2) ;
   DrawRatioAndSave(directory_output, "Compare_Dijet_Phi.png",  H_dijetWide_Phi,   H_DijetSmeared_Phi, -4, 4, "#phi", "Events", leg2) ;
   DrawRatioAndSave(directory_output, "Compare_Dijet_M.png",    H_dijetWide_M,     H_DijetSmeared_M,    1500, 4000, "M [GeV]", "Events", leg2) ;
+
+  DrawPullAndSave(directory_output, "Histo_WithPull.png", H_dijetWide_M, H_DijetSmeared_M, 1500,4000, "M [GeV]", "Events", leg2 );
+
   }else{
     cout<<"Non sto facendo confronti"<<endl;
   }
