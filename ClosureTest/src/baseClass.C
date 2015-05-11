@@ -5,10 +5,15 @@
 baseClass::baseClass(string * inputList, string * cutFile, string * treeName, string * outputFileName, string * cutEfficFile):
   PileupWeight_ ( 1.0 ),
   fillSkim_                         ( true ) ,
-  fillAllPreviousCuts_              ( true ) ,
-  fillAllOtherCuts_                 ( true ) ,
-  fillAllSameLevelAndLowerLevelCuts_( true ) ,
-  fillAllCuts_                      ( true ) ,
+  // see -> tolti questi, salva solo quelli NoCuts
+  // fillAllPreviousCuts_              ( true ) ,
+  // fillAllOtherCuts_                 ( true ) ,
+  // fillAllSameLevelAndLowerLevelCuts_( true ) ,
+  // fillAllCuts_                      ( true ) ,
+  fillAllPreviousCuts_              ( false ) ,
+  fillAllOtherCuts_                 ( false ) ,
+  fillAllSameLevelAndLowerLevelCuts_( false ) ,
+  fillAllCuts_                      ( false ) ,
   oldKey_                           ( "" ) 
 {
   //STDOUT("begins");
@@ -387,7 +392,7 @@ void baseClass::readCutFile()
 	    }
 	  else
 	    {
-	      s1 = "cutHisto_noCuts_________________" + thisCut.variableName;
+	      s1 = thisCut.variableName;
 	    }
 	  string s2 = "cutHisto_allPreviousCuts________" + thisCut.variableName;
 	  string s3 = "cutHisto_allOthrSmAndLwrLvlCuts_" + thisCut.variableName;
@@ -1016,13 +1021,12 @@ bool baseClass::writeCutHistos()
        it != orderedCutNames_.end(); it++)
     {
       cut * c = & (cutName_cut_.find(*it)->second);
-      //see -> Commentati i Write perche non mi servono qua questi plot
-      //      if ( fillSkim_                          ) c->histo1.Write();
-      //if ( fillAllPreviousCuts_               ) c->histo2.Write();
-      //if ( fillAllOtherCuts_                  ) c->histo4.Write();
+      if ( fillSkim_                          ) c->histo1.Write();
+      if ( fillAllPreviousCuts_               ) c->histo2.Write();
+      if ( fillAllOtherCuts_                  ) c->histo4.Write();
 #ifdef SAVE_ALL_HISTOGRAMS 
-      //if ( fillAllSameLevelAndLowerLevelCuts_ ) c->histo3.Write();
-      //if ( fillAllCuts_                       ) c->histo5.Write();
+      if ( fillAllSameLevelAndLowerLevelCuts_ ) c->histo3.Write();
+      if ( fillAllCuts_                       ) c->histo5.Write();
 #endif // SAVE_ALL_HISTOGRAMS
     }
 

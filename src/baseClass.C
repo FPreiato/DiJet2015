@@ -5,10 +5,15 @@
 baseClass::baseClass(string * inputList, string * cutFile, string * treeName, string * outputFileName, string * cutEfficFile):
   PileupWeight_ ( 1.0 ),
   fillSkim_                         ( true ) ,
-  fillAllPreviousCuts_              ( true ) ,
-  fillAllOtherCuts_                 ( true ) ,
-  fillAllSameLevelAndLowerLevelCuts_( true ) ,
-  fillAllCuts_                      ( true ) ,
+  // see -> tolti questi, salva solo quelli con NoCuts 
+  // fillAllPreviousCuts_              ( true ) ,
+  // fillAllOtherCuts_                 ( true ) ,
+  // fillAllSameLevelAndLowerLevelCuts_( true ) ,
+  // fillAllCuts_                      ( true ) ,
+  fillAllPreviousCuts_              ( false ) ,
+  fillAllOtherCuts_                 ( false ) ,
+  fillAllSameLevelAndLowerLevelCuts_( false ) ,
+  fillAllCuts_                      ( false ) ,
   oldKey_                           ( "" ) 
 {
   //STDOUT("begins");
@@ -387,7 +392,8 @@ void baseClass::readCutFile()
 	    }
 	  else
 	    {
-	      s1 = "cutHisto_noCuts_________________" + thisCut.variableName;
+	      // s1 = "cutHisto_noCuts_________________" + thisCut.variableName;
+	      s1 = "H_" + thisCut.variableName;
 	    }
 	  string s2 = "cutHisto_allPreviousCuts________" + thisCut.variableName;
 	  string s3 = "cutHisto_allOthrSmAndLwrLvlCuts_" + thisCut.variableName;
@@ -403,7 +409,7 @@ void baseClass::readCutFile()
 	  thisCut.histo3.Sumw2();
 	  thisCut.histo4.Sumw2();
 	  thisCut.histo5.Sumw2();
-	  // Filled event by event
+	  //Filled event by event
 	  thisCut.filled = false;
 	  thisCut.value = 0;
 	  thisCut.weight = 1;

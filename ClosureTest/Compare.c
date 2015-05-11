@@ -78,6 +78,7 @@ int main(int argc, char* argv[]) {
   H_DijetSmeared_Eta->Rebin(5);
   H_DijetSmeared_Phi->Rebin(5);
   H_DijetSmeared_M->Rebin(5);
+  //H_DijetSmeared_M->Rebin(10);
 
   TH1D *H_dijetWide_Pt   = (TH1D*)file1.Get("H_dijetWide_Pt");
   TH1D *H_dijetWide_Eta = (TH1D*)file1.Get("H_dijetWide_Eta");
@@ -87,6 +88,7 @@ int main(int argc, char* argv[]) {
   H_dijetWide_Eta->Rebin(5);
   H_dijetWide_Phi->Rebin(5);
   H_dijetWide_M->Rebin(5);
+  // H_dijetWide_M->Rebin(10);
 
   cout<<"File exist"<<endl;
 
@@ -105,32 +107,46 @@ int main(int argc, char* argv[]) {
 
   if(Comparison == true){
 
-  TLegend *leg2 = new TLegend( 0.1, 0.9, 0.4, 0.6);
-  leg2 -> SetHeader("Variable:");
-  leg2 -> AddEntry(H_dijetWide_M, "Reco WideJet", "L");
-  leg2 -> AddEntry(H_DijetSmeared_M, "Jet Smeared ", "L");
+    // TLegend *leg2 = new TLegend( 0.15, 0.9, 0.45, 0.6);
+    // TLegend *leg2 = new TLegend( 0.9, 0.9, 0.6, 0.6);
+    // leg2 -> SetBorderSize( 0);
+    // leg2 -> SetFillColor ( 0);
+    // leg2 -> SetFillStyle ( 0);
+    // leg2 -> SetTextFont ( 42);
+    // leg2 -> SetTextSize (0.035);
+    // leg2 -> SetHeader("  ");
+    // leg2 -> AddEntry(H_dijetWide_M, "Reco WideJet", "L");
+    // leg2 -> AddEntry(H_DijetSmeared_M, "Jet Smeared ", "L");
+
+  int xmin = 0;
+  int xmax = 10000;
 
 
-  DrawRatioAndSave(directory_output, "Compare_Pt_Jet1.png",   H_WideJet1_Pt,   H_JetSmeared1_Pt,    0, 3000, "Pt [GeV]", "Events", leg2) ;
-  DrawRatioAndSave(directory_output, "Compare_Eta_Jet1.png", H_WideJet1_Eta , H_JetSmeared1_Eta, -4, 4, "#eta", "Events", leg2) ;
-  DrawRatioAndSave(directory_output, "Compare_Phi_Jet1.png", H_WideJet1_Phi , H_JetSmeared1_Phi, -4, 4, "#phi", "Events", leg2) ;
-  DrawRatioAndSave(directory_output, "Compare_M_Jet1.png",   H_WideJet1_M ,   H_JetSmeared1_M,    0, 1000, "M [GeV]", "Events", leg2) ;
+  DrawRatioAndSave(directory_output, "Compare_Dijet_M.png",    H_dijetWide_M,     H_DijetSmeared_M,    xmin, xmax, "M [GeV]", "Events", true) ;
+  DrawRatioAndSave(directory_output, "Compare_Dijet_Pt.png",    H_dijetWide_Pt,     H_DijetSmeared_Pt,    0, 3000, "Pt [GeV]", "Events", true) ;
+  DrawRatioAndSave(directory_output, "Compare_Dijet_Eta.png",  H_dijetWide_Eta,   H_DijetSmeared_Eta, -4, 4, "#eta", "Events", true) ;
+  DrawRatioAndSave(directory_output, "Compare_Dijet_Phi.png",  H_dijetWide_Phi,   H_DijetSmeared_Phi, -4, 4, "#phi", "Events", true) ;
+
+  DrawRatioAndSave(directory_output, "Compare_Pt_Jet1.png",   H_WideJet1_Pt,   H_JetSmeared1_Pt,    0, 3000, "Pt [GeV]", "Events", true) ;
+  DrawRatioAndSave(directory_output, "Compare_Eta_Jet1.png", H_WideJet1_Eta , H_JetSmeared1_Eta, -4, 4, "#eta", "Events", true) ;
+  DrawRatioAndSave(directory_output, "Compare_Phi_Jet1.png", H_WideJet1_Phi , H_JetSmeared1_Phi, -4, 4, "#phi", "Events", true) ;
+  DrawRatioAndSave(directory_output, "Compare_M_Jet1.png",   H_WideJet1_M ,   H_JetSmeared1_M,    0, 1000, "M [GeV]", "Events", true) ;
     
-  DrawRatioAndSave(directory_output, "Compare_Pt_Jet2.png",   H_WideJet2_Pt,   H_JetSmeared2_Pt,    0, 3000, "Pt [GeV]", "Events", leg2) ;
-  DrawRatioAndSave(directory_output, "Compare_Eta_Jet2.png", H_WideJet2_Eta , H_JetSmeared2_Eta, -4, 4, "#eta", "Events", leg2) ;
-  DrawRatioAndSave(directory_output, "Compare_Phi_Jet2.png", H_WideJet2_Phi , H_JetSmeared2_Phi, -4, 4, "#phi", "Events", leg2) ;
-  DrawRatioAndSave(directory_output, "Compare_M_Jet2.png",   H_WideJet2_M ,   H_JetSmeared2_M,    0, 1000, "M [GeV]", "Events", leg2) ;
+  DrawRatioAndSave(directory_output, "Compare_Pt_Jet2.png",   H_WideJet2_Pt,   H_JetSmeared2_Pt,    0, 3000, "Pt [GeV]", "Events", true) ;
+  DrawRatioAndSave(directory_output, "Compare_Eta_Jet2.png", H_WideJet2_Eta , H_JetSmeared2_Eta, -4, 4, "#eta", "Events", true) ;
+  DrawRatioAndSave(directory_output, "Compare_Phi_Jet2.png", H_WideJet2_Phi , H_JetSmeared2_Phi, -4, 4, "#phi", "Events", true) ;
+  DrawRatioAndSave(directory_output, "Compare_M_Jet2.png",   H_WideJet2_M ,   H_JetSmeared2_M,    0, 1000, "M [GeV]", "Events", true) ;
     
-  DrawRatioAndSave(directory_output, "Compare_Dijet_Pt.png",    H_dijetWide_Pt,     H_DijetSmeared_Pt,    0, 3000, "Pt [GeV]", "Events", leg2) ;
-  DrawRatioAndSave(directory_output, "Compare_Dijet_Eta.png",  H_dijetWide_Eta,   H_DijetSmeared_Eta, -4, 4, "#eta", "Events", leg2) ;
-  DrawRatioAndSave(directory_output, "Compare_Dijet_Phi.png",  H_dijetWide_Phi,   H_DijetSmeared_Phi, -4, 4, "#phi", "Events", leg2) ;
-  DrawRatioAndSave(directory_output, "Compare_Dijet_M.png",    H_dijetWide_M,     H_DijetSmeared_M,    1500, 4000, "M [GeV]", "Events", leg2) ;
-
-  DrawPullAndSave(directory_output, "Histo_WithPull.png", H_dijetWide_M, H_DijetSmeared_M, 1500,4000, "M [GeV]", "Events", leg2 );
+  DrawPullAndSave(directory_output, "Histo_WithPull.png", H_dijetWide_M, H_DijetSmeared_M, xmin, xmax, "M [GeV]", "Events") ;
 
   }else{
     cout<<"Non sto facendo confronti"<<endl;
   }
 
 }
+
+
+
+
+
 
