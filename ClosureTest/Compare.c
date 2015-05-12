@@ -137,7 +137,7 @@ int main(int argc, char* argv[]) {
   DrawRatioAndSave(directory_output, "Compare_Phi_Jet2.png", H_WideJet2_Phi , H_JetSmeared2_Phi, -4, 4, "#phi", "Events", true) ;
   DrawRatioAndSave(directory_output, "Compare_M_Jet2.png",   H_WideJet2_M ,   H_JetSmeared2_M,    0, 1000, "M [GeV]", "Events", true) ;
     
-  DrawPullAndSave(directory_output, "Histo_WithPull.png", H_dijetWide_M, H_DijetSmeared_M, xmin, xmax, "M [GeV]", "Events") ;
+  DrawPullAndSave(directory_output, "Compare_WithPull.png", H_dijetWide_M, H_DijetSmeared_M, xmin, xmax, "M [GeV]", "Events") ;
 
   }else{
     cout<<"Non sto facendo confronti"<<endl;
