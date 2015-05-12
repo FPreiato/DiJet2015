@@ -16,11 +16,11 @@
 int step_pt=200;       // GeV for pt binning
 int pT_max = 4800;  // maximum value of pT range [GeV]
 int n_categories= 4;  // number of categories for the smearing functions: 2 || 4 || 6
+
 // Histogram parameters : range and binning
 int xmin = 0.0 ;
 int xmax = 2.0 ;
 int histo_bin = 100; 
-
 int n_bin;
 char HistoName[200];
 
@@ -56,7 +56,7 @@ void analysisClass::Loop()
    if (fChain == 0) return;
 
    // Check variables
-   if( step_pt <=0){
+   if( step_pt <0){
      cout<<" "<<endl;
      cout<<"Wrong pT binning"<<endl;
      exit(1);
@@ -135,7 +135,6 @@ void analysisClass::Loop()
      double parton2_pdgId;
      TLorentzVector parton1, parton2;
      TLorentzVector diparton;
-
      int n_partons = gen_pt->size();
 
      if(n_partons < 2) continue;
@@ -317,12 +316,13 @@ void analysisClass::Loop()
      CreateAndFillUserTH1D("H_DeltaR_WideJet1_GenWideJet1", 100, 0. , 3. , DeltaR_WideJet1_GenWideJet1);
      CreateAndFillUserTH1D("H_DeltaR_WideJet2_GenWideJet2", 100, 0. , 3. , DeltaR_WideJet2_GenWideJet2);
      
+     // Calculate response and resolution
      double R_PtWidejet_PtGenWideJet[2];
      double Diff_EtaWidejet_EtaGenWideJet[2];
      double Diff_PhiWidejet_PhiGenWideJet[2];
 
-     R_PtWidejet_PtGenWideJet[0]     = wj1.Pt() / Genwj1.Pt() ;
-     R_PtWidejet_PtGenWideJet[1]     = wj2.Pt() / Genwj2.Pt() ;
+     R_PtWidejet_PtGenWideJet[0]        = wj1.Pt() / Genwj1.Pt() ;
+     R_PtWidejet_PtGenWideJet[1]        = wj2.Pt() / Genwj2.Pt() ;
      Diff_EtaWidejet_EtaGenWideJet[0] = wj1.Eta() - Genwj1.Eta() ;
      Diff_EtaWidejet_EtaGenWideJet[1] = wj2.Eta() - Genwj2.Eta() ;
      Diff_PhiWidejet_PhiGenWideJet[0] = wj1.Phi() - Genwj1.Phi() ;
@@ -342,23 +342,22 @@ void analysisClass::Loop()
      if(DeltaR_WideJet1_GenWideJet1 > 0.3 || DeltaR_WideJet2_GenWideJet2 > 0.3) continue;
      
      for(int kk=0; kk<2; kk++){// loop on GenWideJets
-       if(kk == 0) CreateAndFillUserTH1D("H_DeltaR_Totale", 100, 0. , 0.4 , DeltaR_WideJet1_GenWideJet1);
-       if(kk == 1) CreateAndFillUserTH1D("H_DeltaR_Totale", 100, 0. , 0.4 , DeltaR_WideJet2_GenWideJet2);
-       
+          
        CreateAndFillUserTH1D("H_Diff_EtaWidejet_EtaGenWideJet", 100, -1, 1, Diff_EtaWidejet_EtaGenWideJet[kk] );
        CreateAndFillUserTH1D("H_Diff_PhiWidejet_PhiGenWideJet", 100, -1, 1, Diff_PhiWidejet_PhiGenWideJet[kk] );
        
-       for(int ii=0; ii<5; ii++){	  
+       for(int ii=0; ii<5; ii++){ // loop on eta bins	  
 	 double eta_bin_min = ii/2.;       
 	 double eta_bin_max = ii/2. +0.5;	 
 	 if( fabs(GenWideJet_Eta[kk]) >=eta_bin_min && fabs(GenWideJet_Eta[kk]) < eta_bin_max){	    
 
-	   for(int jj=0; jj<n_bin ; jj++){	 	      
+	   for(int jj=0; jj<n_bin ; jj++){ // loop on pT bins	 	      
 	     int pt_bin_min = ( (jj-1)*step_pt)+step_pt;
 	     int pt_bin_max = (jj*step_pt)+step_pt;
 	     if(GenWideJet_Pt[kk] >=pt_bin_min && GenWideJet_Pt[kk] < pt_bin_max){ 
 	       
-	       if(n_categories == 2){
+	       // Categories 
+	       if(n_categories == 2){ // Quarks // Gluons
 		 if(Parton_pdgId[kk] == 21){ 
 		   sprintf(HistoName,"Histo_RGluons_%d_%d",ii,pt_bin_max);
 		 }
@@ -366,7 +365,7 @@ void analysisClass::Loop()
 		   sprintf(HistoName,"Histo_RQuarks_%d_%d",ii,pt_bin_max);
 		 }
 	       }
-	       if(n_categories == 4){	       
+	       if(n_categories == 4){ // Light Quarks, Charm, Bottom // Gluons	       
 		 if(Parton_pdgId[kk] == 21){ 
 		   sprintf(HistoName,"Histo_RGluons_%d_%d",ii,pt_bin_max);
 		 }
@@ -380,7 +379,7 @@ void analysisClass::Loop()
 		   sprintf(HistoName,"Histo_RQuarkBOTTOM_%d_%d",ii,pt_bin_max);
 		 }
 	       }
-	       if(n_categories == 6){
+	       if(n_categories == 6){ // Up, Down, Strange, Charm, Bottom // Gluons
 		 if(Parton_pdgId[kk] == 21){ 
 		   sprintf(HistoName,"Histo_RGluons_%d_%d",ii,pt_bin_max);
 		 }
