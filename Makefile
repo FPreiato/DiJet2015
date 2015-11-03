@@ -1,4 +1,5 @@
-COMP=g++
+
+COMP=g++ -std=c++11 -lboost_regex
 FLAGS =
 #FLAGS += -DUSE_EXAMPLE
 FLAGS += -DSAVE_ALL_HISTOGRAMS 
@@ -9,7 +10,7 @@ INC= -I.. -I. -I./include  -I${CLHEP}/include -I$(call scram,boost,INCLUDE) -I$(
 ROOTINC= -I${ROOTSYS}/include
 LIBS= -L.  ${ROOTLIBS} -L${CLHEP}/lib -L${CLHEP}/lib
 SRC= ./src
-SELECTIONLIB=$(SRC)/rootNtupleClass.o $(SRC)/baseClass.o $(SRC)/analysisClass.o $(SRC)/jsonParser.o $(SRC)/pileupReweighter.o $(SRC)/qcdFitter.o $(SRC)/qcdFitter_V1.o  $(SRC)/likelihoodGetter.o $(SRC)/eventListHelper.o
+SELECTIONLIB=$(SRC)/rootNtupleClass.o $(SRC)/baseClass.o $(SRC)/analysisClass.o $(SRC)/jsonParser.o $(SRC)/pileupReweighter.o $(SRC)/qcdFitter.o $(SRC)/qcdFitter_V1.o  $(SRC)/likelihoodGetter.o $(SRC)/eventListHelper.o $(SRC)/TFileService.o $(SRC)/TFileDirectory.o $(SRC)/TH1AddDirectorySentry.o
 EXE = main
 
 # ********** TEMPLATE *************

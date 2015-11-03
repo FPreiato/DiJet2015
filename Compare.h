@@ -188,8 +188,8 @@ void DrawRatioAndSave(const char *output_dir, const char *nameFile,  TH1D* h1, T
       x[ii] = ii * 1000 - 1010;
       ex[ii] = 0;
       y[ii] = 1;  
-      yd95[ii] = 0.025;
-      yu95[ii] = 0.025;
+      yd95[ii] = 0.05;
+      yu95[ii] = 0.05;
     }
     TGraph* Line = new TGraph (npoints, x, y);
     Line->SetLineColor(kRed);

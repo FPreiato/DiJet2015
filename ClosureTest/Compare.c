@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
   H_DijetSmeared_Eta->Rebin(5);
   H_DijetSmeared_Phi->Rebin(5);
   H_DijetSmeared_M->Rebin(5);
-  //H_DijetSmeared_M->Rebin(10);
+  // H_DijetSmeared_M->Rebin(10);
 
   TH1D *H_dijetWide_Pt   = (TH1D*)file1.Get("H_dijetWide_Pt");
   TH1D *H_dijetWide_Eta = (TH1D*)file1.Get("H_dijetWide_Eta");
@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
     // leg2 -> AddEntry(H_DijetSmeared_M, "Jet Smeared ", "L");
 
   int xmin = 0;
-  int xmax = 10000;
+  int xmax = 2000;
 
 
   DrawRatioAndSave(directory_output, "Compare_Dijet_M.png",    H_dijetWide_M,     H_DijetSmeared_M,    xmin, xmax, "M [GeV]", "Events", true) ;

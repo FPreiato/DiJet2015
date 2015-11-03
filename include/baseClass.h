@@ -16,14 +16,32 @@
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TProfile.h>
+#include <TParameter.h>
 #include <math.h>
 #include <stdlib.h>
+//federico
+#include "etaBinning.h"
+#include "ptBinning.h"
+
 
 #define STDOUT(STRING) {		   \
 	std::cout << __FILE__ <<" - Line "<<__LINE__<<" - "<<__FUNCTION__<<": "<< STRING <<std::endl;   \
 }
 
 using namespace std;
+
+
+namespace fwlite {
+  class TFileService;
+}
+
+class TFileDirectory;
+
+template <typename T>
+struct ExtrapolationVectors {
+  typedef std::vector<std::vector<std::vector<T*> > > type;
+};
+
 
 struct cut {
   string variableName;
@@ -198,14 +216,37 @@ class baseClass : public rootNtupleClass {
   void FillUserTH2DLower(const char*   nameAndTitle, Double_t value_x,  Double_t value_y, Double_t weight=1);
   void CreateAndFillUserTProfile(const char* nameAndTitle, Int_t nbinsx, Double_t xlow, Double_t xup, Double_t ylow, Double_t yup,  Double_t value_x,  Double_t value_y); 
 
-
   void fillSkimTree();
   void fillReducedSkimTree();
 
   PileupReweighter pileupReweighter_;
 
+  //federico
   TFile * output_root_;
+  string * outputFileNameSmearing_;
+  TParameter<double> Step_pt;
+  TParameter<double> NCategory;
 
+  EtaBinning mEtaBinning;
+  PtBinning mPtBinning;
+
+
+  template<typename T>
+    std::vector<std::vector<T*> > buildEtaPtVector(TFileDirectory dir, const std::string& branchName, int nBins, double xMin, double xMax);
+  template<typename T>
+    std::vector<T*> buildPtVector(TFileDirectory dir, const std::string& branchName, const std::string& etaName, int nBins, double xMin, double xMax);
+  template<typename T>
+    std::vector<T*> buildPtVector(TFileDirectory dir, const std::string& branchName, int nBins, double xMin, double xMax);
+
+  //   template<typename T>
+  //std::vector<std::vector<T*> > buildEtaPtVector( const std::string& branchName, int nBins, double xMin, double xMax);
+  //template<typename T>
+  //std::vector<T*> buildPtVector( const std::string& branchName, const std::string& etaName, int nBins, double xMin, double xMax);
+  //template<typename T>
+  //std::vector<T*> buildPtVector( const std::string& branchName, int nBins, double xMin, double xMax);
+  
+  ////////////////
+  
   private :
   int nOptimizerCuts_;
   string * configFile_;
@@ -229,6 +270,7 @@ class baseClass : public rootNtupleClass {
   void readCutFile();
   bool fillCutHistos();
   bool writeCutHistos();
+  bool createSmearingDir();
   bool writeUserHistos();
   bool updateCutEffic();
   bool writeCutEfficFile();
