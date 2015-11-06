@@ -1,5 +1,5 @@
 // To compile, simply run 'asciidoc manual.txt'                                                                         
-= Gamma + jets analysis                                                                                                                                                                    
+= Dijet analysis with Smearing Function                                                                                                                                                                    
 :toc2:                                                                                                                  
 :data-uri:                                                                                                              
 :latexmath:                                                                                                             
@@ -22,8 +22,8 @@ and src/rootNtupleClass.C) with the variable definitions of a given root ntuple
 The class baseClass (include/baseClass.h and src/baseClass.C) inherits from the
 automatically generated rootNtupleClass.
 baseClass provides the methods that are common to all analysis, such as the method
-to read a list of root files and form a chain. It will, asap, also provide a method
-to read a list of selection cuts.
+to read a list of root files and form a chain. A method
+to read a list of selection cuts is provided.
 
 The class analysisClass (include/analysisClass.h and src/analysisClass.C) inherits
 from baseClass.
@@ -34,73 +34,78 @@ The main program (src/main.C) receives the configuration parameters (such as the
 chain of root files and a file to provide a cut list) and executes the analysisClass code.
 
 Instructions:
--------------
 
-Inside:	
+=== Step 1
+Run a kind of MakeClass on file.root with nameTree
+
     cd CMSDIJET/DijetRootTreeAnalyzer
-
-1) Run a kind of MakeClass on file.root with nameTree
- 
-                    ./scripts/make_rootNtupleClass.sh –f file.root –t nameTree
-
+   ./scripts/make_rootNtupleClass.sh –f file.root –t nameTree
+----
 EX:
-./scripts/make_rootNtupleClass.sh –f /tmp/fpreiato/RSGravitonToQuarkQuark_kMpl01_M_3000_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_PHYS14_25_V1-v1__MINIAODSIM_10_1_t8g.root -t dijets/events
+./scripts/make_rootNtupleClass.sh –f /ntuple/RSGravitonToQuarkQuark_kMpl01_M_3000_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_PHYS14_25_V1-v1__MINIAODSIM_10_1_t8g.root -t dijets/events
+----
 
 Say yes ("y") both questions
 
-2) Virtual link between your program and general program analysisClass.C 
+=== Step 2
+Virtual link between your program and general program analysisClass.C 
 
+----
 ln -sf analysisClass_mainDijetSelection.C src/analysisClass.C
    or 
-ln -sf analysisClass_myCodeAK8.C src/analysisClass.C
-
-3) To compile
+ln -sf analysisClass_myCodeAK4.C src/analysisClass.C
+----
+and compile
 
 Make clean
-
 Make all
 
-4) Write the name file in a list  inputListJets.txt
+=== Step 3
+ Write the name file in a list, as inputListJets.txt
 
-EX:
+----
 echo "/tmp/fpreiato/RSGravitonToQuarkQuark_kMpl01_M_1000_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_PHYS14_25_V1-v1__MINIAODSIM_10_1_t8g.root" > ! config/inputListJets.txt
+----
 
-5) Run the analysis program /.main: 
-reads the previous txt list, config-file from the rootfile directoty/nameTree.
- In output rootFile (.root) and cutEfficiencuFile (.root). All the produced files are in the directory output.
+=== Step 4
+Run the analysis program /.main: 
+Reads the previous txt list, config-file from the rootfile directoty/nameTree.
+In output rootFile (.root) and cutEfficiencuFile (.root). All the produced files are in the directory output.
 
-EX:
+----
 ./main config/inputListJets.txt config/cutFile_mainDijetSelection.txt dijets/events output/rootFile output/cutEfficiencyFile
+----
 
 If you want save others variables you have to put these in the config/cutFile_mainDijetSelection.txt
 
 ###########################################################
 
-You can run on a list of files
+=== Run on a list of files
 
-1) To make the list -> From directory DijetRootAnalyzer
+=== Step1 - Make the list
 
 python createList_T2.py –i path/cartella_input –o /path/cartella_output
 
-EX:
+----
 python createList_T2.py -i /pnfs/roma1.infn.it/data/cms/store/user/santanas/qqRSGqq_PU20bx25_Tag626513a_20141225_124228/ -o /cmshome/fpreiato/DiJet/test/CMSSW_7_2_1_DiJet/src/CMSDIJET/DijetRootTreeAnalyzer/config/lists
+----
 
-2) To run the analysis program in bash on this list
-
+=== Step 2 - Run in batch
+Run the analysis in batch on this list
+----
 python scripts/submit_batch_T2.py -i config/lists/ -o output/
+----
+where:
+- config/lists/ -> directory where is the list
+- output/ -> directory for the output of program
 
-config/lists/ -> directory where is the list
+This will produce for every sample in the list:
+rootFile_Sample.root 
+rootFile_reduced_skim_Sample.root
+cutEfficiencyFile_Sample.root
 
-output/ -> directory for the output of program
 
-Produce:
-rootFile_for_every_MassSample.root
-rootFile_reduced_skim_for _every_MassSample.root
-cutEfficiencyFile_for_every_MassSample.root.root
-
-###########################################################
-
-Notes:
+=== Notes:
 
 1) one can have several analyses in a directory, such as
     src/analysisClass_myCode1.C
