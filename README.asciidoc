@@ -109,6 +109,43 @@ rootFile_Sample.root
 rootFile_reduced_skim_Sample.root
 cutEfficiencyFile_Sample.root
 
+=== Notes for the smearing functions
+
+The analysis flow is the same of standard analysis, but in addictions the smearing functions are calculated
+as the ratio between the reco jet pT and gen jet pT
+
+----
+response = pT(recojet) / pT(genjet)
+----
+
+This response is calculate in bin of eta and pT.
+Utilities for the method can be found in +include/etaBinning.h+ and +include/ptBinning.h+.
+In  +etaBinning.h+, if you want change the binning, you have to change the vector +bin+,
+instead if you want change the pt binning, in +ptBinning.h+, is enough change the variable +step_pt+.
+At the moment it is set at 200 GeV, it means that, starting from 0GeV to 5000 GeV (variable +pT_max+), bins of 200GeV will be create.
+
+== Drawer (to update)
+
+= Drawer smearing function
+In the directory +DijetRootTreeAnalyzer/draw+, you can find the drawer for the smearing functions.
+The source code is +drawSmearingFunctions.cpp+ which include classes from +Compare.h+
+Compile this with +make all+, and then in order to plot all smearing functions, type:
+
+----
+./drawSmearingFunctions ../output/rootFile_smearing.root 
+----
+
+The plots will be save in the directory +SmearingFunction/+
+
+= Drawer closure test
+In the directory +DijetRootTreeAnalyzer/ClosureTest/draw+, you can find the drawer for the closure test.
+In the source code +drawClosureTest.cpp+, you can add the plots that you want to draw in the vector HistoName.
+The class +DrawPullAndSave+ will draw the comparison between the "truth" (real reco jet in the ntupla) and the jet smeared with the smearing functions.
+To lunch the programm, type
+
+----
+./drawSmearingFunctions ../output/rootFile_truth.root ../output/rootFile_smearing.root 
+----
 
 === Notes:
 
