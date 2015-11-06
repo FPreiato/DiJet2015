@@ -10,7 +10,6 @@
                                                                    
 
 == Introduction:
--------------
 
 This package provides a small facility to analyze one or a chain of root ntuples.
 
