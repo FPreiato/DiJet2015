@@ -9,7 +9,7 @@
 :iconsdir: /gridgroup/cms/brochet/.local/etc/asciidoc/images/icons                                                      
                                                                    
 
-Introduction:
+== Introduction:
 -------------
 
 This package provides a small facility to analyze one or a chain of root ntuples.
@@ -33,7 +33,7 @@ the method Loop() of rootNtupleClass.
 The main program (src/main.C) receives the configuration parameters (such as the input
 chain of root files and a file to provide a cut list) and executes the analysisClass code.
 
-Instructions:
+== Instructions:
 
 === Step 1
 Run a kind of MakeClass on file.root with nameTree
@@ -41,8 +41,9 @@ Run a kind of MakeClass on file.root with nameTree
     cd CMSDIJET/DijetRootTreeAnalyzer
    ./scripts/make_rootNtupleClass.sh –f file.root –t nameTree
 ----
-EX:
+
 ./scripts/make_rootNtupleClass.sh –f /ntuple/RSGravitonToQuarkQuark_kMpl01_M_3000_Tune4C_13TeV_pythia8__Phys14DR-PU20bx25_PHYS14_25_V1-v1__MINIAODSIM_10_1_t8g.root -t dijets/events
+
 ----
 
 Say yes ("y") both questions
@@ -51,14 +52,19 @@ Say yes ("y") both questions
 Virtual link between your program and general program analysisClass.C 
 
 ----
+
 ln -sf analysisClass_mainDijetSelection.C src/analysisClass.C
    or 
 ln -sf analysisClass_myCodeAK4.C src/analysisClass.C
+
 ----
+
 and compile
 
+----
 Make clean
 Make all
+----
 
 === Step 3
  Write the name file in a list, as inputListJets.txt
