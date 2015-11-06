@@ -23,7 +23,6 @@
 #include "TFileService.h"
 
 bool verbose = false;
-int n_categories = 2;
 int Ev_Initial;
 int Ev_NPartons;
 int Ev_PartonsOK;
@@ -31,7 +30,6 @@ int Ev_NGenJet;
 int Ev_GenJetOK;
 int Ev_NRecoJet;
 int Ev_RecoJetOK;
-int Ev_Matching;
 
 analysisClass::analysisClass(string * inputList, string * cutFile, string * treeName, string * outputFileName, string * cutEfficFile)
   :baseClass(inputList, cutFile, treeName, outputFileName, cutEfficFile)
@@ -48,35 +46,32 @@ analysisClass::analysisClass(string * inputList, string * cutFile, string * tree
   else 
     fjJetDefinition = JetDefPtr( new fastjet::JetDefinition(fastjet::cambridge_algorithm, rParam) );
 
-  outputFileNameSmearing_ = outputFileName;
-
   std::cout << "analysisClass::analysisClass(): ends " << std::endl;
 
 }
 
 analysisClass::~analysisClass()
 {
-  TH1D *EventCounter = new TH1D("EventCounter","",10, 0 , 10);
+  TH1D *EvCounter = new TH1D("EvCounter","",10, -0.5 , 9.5);
 
-  EventCounter -> GetXaxis()->SetBinLabel(1,"Initial ev.");
-  EventCounter -> GetXaxis()->SetBinLabel(2,"N(partons)>2");
-  EventCounter -> GetXaxis()->SetBinLabel(3,"Partons ok");
-  EventCounter -> GetXaxis()->SetBinLabel(4,"N(GenJet)>2");
-  EventCounter -> GetXaxis()->SetBinLabel(5,"GenJet OK");
-  EventCounter -> GetXaxis()->SetBinLabel(6,"N(RecoJet)>2");
-  EventCounter -> GetXaxis()->SetBinLabel(7,"RecoJet OK");
-  EventCounter -> GetXaxis()->SetBinLabel(8,"Matching");
+  EvCounter -> GetXaxis()->SetBinLabel(1,"Initial ev.");
+  EvCounter -> GetXaxis()->SetBinLabel(2,"N(partons)>2");
+  EvCounter -> GetXaxis()->SetBinLabel(3,"Partons ok");
+  EvCounter -> GetXaxis()->SetBinLabel(4,"N(GenJet)>2");
+  EvCounter -> GetXaxis()->SetBinLabel(5,"GenJet OK");
+  EvCounter -> GetXaxis()->SetBinLabel(6,"N(RecoJet)>2");
+  EvCounter -> GetXaxis()->SetBinLabel(7,"RecoJet OK");
   
-  EventCounter -> SetBinContent(1,Ev_Initial);
-  EventCounter -> SetBinContent(2,Ev_NPartons);
-  EventCounter -> SetBinContent(3,Ev_PartonsOK);
-  EventCounter -> SetBinContent(4,Ev_NGenJet);
-  EventCounter -> SetBinContent(5,Ev_GenJetOK);
-  EventCounter -> SetBinContent(6,Ev_NRecoJet);
-  EventCounter -> SetBinContent(7,Ev_RecoJetOK);
-  EventCounter -> SetBinContent(8,Ev_Matching);
+  EvCounter -> SetBinContent(1,Ev_Initial);
+  EvCounter -> SetBinContent(2,Ev_NPartons);
+  EvCounter -> SetBinContent(3,Ev_PartonsOK);
+  EvCounter -> SetBinContent(4,Ev_NGenJet);
+  EvCounter -> SetBinContent(5,Ev_GenJetOK);
+  EvCounter -> SetBinContent(6,Ev_NRecoJet);
+  EvCounter -> SetBinContent(7,Ev_RecoJetOK);
 
-  EventCounter -> Write();
+  output_root_ -> cd();   
+  EvCounter -> Write();
 
   std::cout << "analysisClass::~analysisClass(): begins " << std::endl;
   std::cout << "analysisClass::~analysisClass(): ends " << std::endl;
@@ -84,58 +79,11 @@ analysisClass::~analysisClass()
 
 void analysisClass::Loop()
 {
-   std::cout << "Running smearing function analysis" <<std::endl;   
+   std::cout << "Running standard analysis" <<std::endl;   
    std::cout << "analysisClass::Loop() begins" <<std::endl;   
     
    if (fChain == 0) return;
 
-
-   if( n_categories != 2 && n_categories !=3 && n_categories != 4 && n_categories != 6){
-     cout<<" "<<endl;
-     cout<<"Wrong number of categories"<<endl;
-     cout<<"Choose between 2, 3, 4 or 6"<<endl;
-     exit(1);
-   } else {
-     cout<<"Number of categories choosen: "<<n_categories << endl;
-   }  
-
- 
-   TFile *outputSmearing_root = new TFile((*outputFileNameSmearing_ + "_smearing.root").c_str(),"RECREATE");
-   fwlite::TFileService fs(outputSmearing_root);
-   Step_pt.SetVal(mPtBinning.get_PtStep()) ;
-   NCategory.SetVal(n_categories) ;
-   Step_pt.Write("PtStep");
-   NCategory.Write("n_categories");
-   TFileDirectory smearingDir = fs.mkdir("smearingFunction");
-   std::vector<std::vector<TH1F*> > smearingFunction_Q ;
-   std::vector<std::vector<TH1F*> > smearingFunction_QUp ;
-   std::vector<std::vector<TH1F*> > smearingFunction_QDown ;
-   std::vector<std::vector<TH1F*> > smearingFunction_QStrange ;
-   std::vector<std::vector<TH1F*> > smearingFunction_QBottom ;
-   std::vector<std::vector<TH1F*> > smearingFunction_QCharm ;
-   std::vector<std::vector<TH1F*> > smearingFunction_QLight ;
-   std::vector<std::vector<TH1F*> > smearingFunction_QHeavy ;
-
-   if(n_categories ==2){
-     smearingFunction_Q= buildEtaPtVector<TH1F>(smearingDir, "smearing_Quark", 150, 0., 2.);   
-   } else if(n_categories ==3){
-     smearingFunction_QLight   = buildEtaPtVector<TH1F>(smearingDir, "smearing_LightQuark", 150, 0., 2.);   
-     smearingFunction_QHeavy = buildEtaPtVector<TH1F>(smearingDir, "smearing_HeavyQuark", 150, 0., 2.);   
-   } else if(n_categories ==4){
-     smearingFunction_QLight    = buildEtaPtVector<TH1F>(smearingDir, "smearing_LightQuark", 150, 0., 2.);   
-     smearingFunction_QCharm  = buildEtaPtVector<TH1F>(smearingDir, "smearing_CharmQuark", 150, 0., 2.);   
-     smearingFunction_QBottom = buildEtaPtVector<TH1F>(smearingDir, "smearing_BottomQuark", 150, 0., 2.);   
-   } else if(n_categories ==6){
-     smearingFunction_QUp       = buildEtaPtVector<TH1F>(smearingDir, "smearing_UpQuark", 150, 0., 2.);   
-     smearingFunction_QDown   = buildEtaPtVector<TH1F>(smearingDir, "smearing_DownQuark", 150, 0., 2.);   
-     smearingFunction_QStrange = buildEtaPtVector<TH1F>(smearingDir, "smearing_StrangeQuark", 150, 0., 2.);   
-     smearingFunction_QCharm  = buildEtaPtVector<TH1F>(smearingDir, "smearing_CharmQuark", 150, 0., 2.);   
-     smearingFunction_QBottom = buildEtaPtVector<TH1F>(smearingDir, "smearing_BottomQuark", 150, 0., 2.);   
-   }
-
-   std::vector<std::vector<TH1F*> > smearingFunction_G = buildEtaPtVector<TH1F>(smearingDir, "smearing_Gluon", 150, 0., 2.);   
-   output_root_ -> cd();   
-   
    /////////initialize variables
    
    Long64_t nentries = fChain->GetEntriesFast();
@@ -289,13 +237,13 @@ void analysisClass::Loop()
        double wideJetDeltaR_ = getPreCutValue1("DeltaR");
        
        if(no_jets_ak4<2) continue;
-
-     Ev_NRecoJet++;
+       
+       Ev_NRecoJet++;
        
        if(fabs(jetEtaAK4->at(0)) > getPreCutValue1("jetFidRegion") || jetPtAK4->at(0) < getPreCutValue1("pt0Cut")) continue;
        if(fabs(jetEtaAK4->at(1)) > getPreCutValue1("jetFidRegion") || jetPtAK4->at(1) < getPreCutValue1("pt1Cut")) continue;
        
-     Ev_RecoJetOK++;
+       Ev_RecoJetOK++;
 
        // TLorentzVector jet1, jet2 leading reco jet
        jet1.SetPtEtaPhiM(jetPtAK4->at(0), jetEtaAK4->at(0), jetPhiAK4->at(0), jetMassAK4->at(0));
@@ -366,97 +314,11 @@ void analysisClass::Loop()
      // Create dijet system
        wdijet = wj1 + wj2;
        
-     //+++++++++++++++++++
-     // Utilities for SMEARING FUNCTIONS
        double DeltaR_WideJet1_GenWideJet1 = wj1.DeltaR(Genwj1);     
        double DeltaR_WideJet2_GenWideJet2 = wj2.DeltaR(Genwj2);         
        CreateAndFillUserTH1D("H_DeltaR_WideJet1_GenWideJet1", 100, 0. , 3. , DeltaR_WideJet1_GenWideJet1);
        CreateAndFillUserTH1D("H_DeltaR_WideJet2_GenWideJet2", 100, 0. , 3. , DeltaR_WideJet2_GenWideJet2);
-       
-       // Calculate response and resolution
-       double R_PtWidejet_PtGenWideJet[2];
-       double Diff_EtaWidejet_EtaGenWideJet[2];
-       double Diff_PhiWidejet_PhiGenWideJet[2];
-       
-       R_PtWidejet_PtGenWideJet[0]        = wj1.Pt() / Genwj1.Pt() ;
-       R_PtWidejet_PtGenWideJet[1]        = wj2.Pt() / Genwj2.Pt() ;
-       Diff_EtaWidejet_EtaGenWideJet[0] = wj1.Eta() - Genwj1.Eta() ;
-       Diff_EtaWidejet_EtaGenWideJet[1] = wj2.Eta() - Genwj2.Eta() ;
-       Diff_PhiWidejet_PhiGenWideJet[0] = wj1.Phi() - Genwj1.Phi() ;
-       Diff_PhiWidejet_PhiGenWideJet[1] = wj2.Phi() - Genwj2.Phi() ;
-       
-       double Parton_pdgId[2];
-       double GenWideJet_Pt[2];
-       double GenWideJet_Eta[2];    
-       GenWideJet_Pt[0]   = Genwj1.Pt();
-       GenWideJet_Eta[0] = Genwj1.Eta();
-       Parton_pdgId[0]      = parton1_pdgId;        
-       GenWideJet_Pt[1]   = Genwj2.Pt();
-       GenWideJet_Eta[1] = Genwj2.Eta();    
-       Parton_pdgId[1]      = parton2_pdgId;    
-       
-       
-       // geometrical matching
-       if(DeltaR_WideJet1_GenWideJet1 > 0.3 || DeltaR_WideJet2_GenWideJet2 > 0.3) continue;
-
-       Ev_Matching++;
-
-       for(int kk=0; kk<2; kk++){// loop on GenWideJets
-	 
-	 int etaBin = mEtaBinning.getBin( fabs(GenWideJet_Eta[kk]) );
-	 int ptBin = mPtBinning.getPtBin( GenWideJet_Pt[kk] );
-	 
-	 if(verbose){
-	   const std::pair<float, float> etaBins = mEtaBinning.getBinValue(etaBin);
-	   const std::pair<float, float> ptBins = mPtBinning.getBinValue(ptBin);
-	   cout<<"etaGen  "<< fabs(GenWideJet_Eta[kk]) << "    pTGen   "<<  GenWideJet_Pt[kk] <<endl;
-	   cout<<"etaBin  "<< etaBin << "    pTBin   "<<ptBin<<endl;
-	   cout<<"etaBin.first  "<< etaBins.first << "    etaBin.second   "<<etaBins.second<<endl;
-	   cout<<"ptBin.first  "<< ptBins.first << "    ptBin.second   "<<ptBins.second<<endl;
-	 }
-
-	 //	 if(Parton_pdgId[kk] == 21) smearingFunction_G[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk]) ;	 
-
-	 if(n_categories ==2){
-	   if(Parton_pdgId[kk] == 21){
-	     smearingFunction_G[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk]) ;	 
-	   }else{
-	     smearingFunction_Q[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk] );
-	   } 
-	 } else if(n_categories == 3 ){
-	   if(Parton_pdgId[kk] == 21){
-	     smearingFunction_G[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk]) ;	 
-	   }else if( fabs(Parton_pdgId[kk]) == 1 || fabs(Parton_pdgId[kk]) == 2  || fabs(Parton_pdgId[kk]) == 3 ){ 
-	     smearingFunction_QLight[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk] );
-	   }else if( fabs(Parton_pdgId[kk]) == 4 || fabs(Parton_pdgId[kk]) == 5 ){ 
-	     smearingFunction_QHeavy[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk] );
-	   }
-	 }else if(n_categories == 4 ){
-	   if(Parton_pdgId[kk] == 21){
-	     smearingFunction_G[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk]) ;	 
-	   }else if( fabs(Parton_pdgId[kk]) == 1 || fabs(Parton_pdgId[kk]) == 2  || fabs(Parton_pdgId[kk]) == 3 ){ 
-	     smearingFunction_QLight[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk] );
-	   }else if( fabs(Parton_pdgId[kk]) == 4 ){ 
-	     smearingFunction_QCharm[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk] );
-	   }else if( fabs(Parton_pdgId[kk]) == 5 ){ 
-	     smearingFunction_QBottom[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk] );
-	   }
-	 }else if(n_categories == 6 ){
-       	   if(Parton_pdgId[kk] == 21){
-	     smearingFunction_G[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk]) ;	 
-	   }else if( fabs(Parton_pdgId[kk]) == 1){ 
-	     smearingFunction_QUp[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk] );
-	   }else if( fabs(Parton_pdgId[kk]) == 2){ 
-	     smearingFunction_QDown[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk] );
-	   }else if( fabs(Parton_pdgId[kk]) == 3){ 
-	     smearingFunction_QStrange[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk] );
-	   }else if( fabs(Parton_pdgId[kk]) == 4 ){ 
-	     smearingFunction_QCharm[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk] );
-	   }else if( fabs(Parton_pdgId[kk]) == 5 ){ 
-	     smearingFunction_QBottom[etaBin][ptBin]->Fill( R_PtWidejet_PtGenWideJet[kk] );
-	   }
-	 }  
-       }
+     
 
      //++++++++++++++++++++++++++++++++
      //== Fill Variables ==
@@ -562,60 +424,4 @@ void analysisClass::Loop()
 
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
 
-   }
-
-//////////////////////////////////////////////////////////////
-
-template<typename T>
-std::vector<T*> baseClass::buildPtVector(TFileDirectory dir, const std::string& branchName, int nBins, double xMin, double xMax) {
-  //std::vector<T*> baseClass::buildPtVector( const std::string& branchName, int nBins, double xMin, double xMax) {
-
-  bool appendText = (xMin >= 0 && xMax >= 0);
-  std::vector<T*> vector;
-  size_t ptBinningSize = mPtBinning.size();
-  for (size_t j = 0; j < ptBinningSize; j++) {
-
-    const std::pair<float, float> bin = mPtBinning.getBinValue(j);
-    std::stringstream ss;
-    if (appendText)
-      ss << branchName << "_pt_" << (int) bin.first << "_" << (int) bin.second;
-    else
-      ss << branchName << "_" << (int) bin.first << "_" << (int) bin.second;
-
-    if (!appendText) {
-      xMin = bin.first;
-    }
-
-    if (!appendText) {
-      xMax = bin.second;
-    }
-
-    T* object = dir.make<T>(ss.str().c_str(), ss.str().c_str(), nBins, xMin, xMax);
-    vector.push_back(object);
-  }
-
-  return vector;
-}
-////////////////////////
-
-template<typename T>
-std::vector<T*> baseClass::buildPtVector(TFileDirectory dir,  const std::string& branchName, const std::string& etaName, int nBins, double xMin, double xMax) {
-  //std::vector<T*> baseClass::buildPtVector(  const std::string& branchName, const std::string& etaName, int nBins, double xMin, double xMax) {
-  return buildPtVector<T>(dir, branchName + "_" + etaName, nBins, xMin, xMax);
-}
-///////////////////////////////
-template<typename T>
-std::vector<std::vector<T*> > baseClass::buildEtaPtVector(TFileDirectory dir,  const std::string& branchName, int nBins, double xMin, double xMax) {
-  //std::vector<std::vector<T*> > baseClass::buildEtaPtVector(  const std::string& branchName, int nBins, double xMin, double xMax) {
-
-  size_t etaBinningSize = mEtaBinning.size();
-  std::vector<std::vector<T*> > etaBinning;
-
-  
-  for (size_t i = 0; i < etaBinningSize; i++) {
-    const std::string etaName = mEtaBinning.getBinName(i);
-    etaBinning.push_back(buildPtVector<T>(dir, branchName, etaName, nBins, xMin, xMax));
-  }
-
-  return etaBinning;
 }

@@ -86,15 +86,3 @@ dijetWide_pT	      0          +inf		    -	            -	            1        500
 dijetWide_Eta	      -inf       +inf		    -	            -	            1        100 -4 4        SAVE
 dijetWide_Phi	      -inf       +inf		    -	            -	            1        100 -4 4        SAVE
 dijetWide_M	      -inf       +inf		    -	            -	            1        1000 0 10000        SAVE
-JetSmeared1_Pt	      0          +inf		    -	            -	            1        500 0 5000        SAVE
-JetSmeared1_Eta	      -inf       +inf		    -	            -	            1        100 -4 4        SAVE
-JetSmeared1_Phi	      -inf       +inf		    -	            -	            1        100 -4 4        SAVE
-JetSmeared1_M	      -inf       +inf		    -	            -	            1        1000 0 10000        SAVE
-JetSmeared2_Pt	      0          +inf		    -	            -	            1        500 0 5000        SAVE
-JetSmeared2_Eta	      -inf       +inf		    -	            -	            1        100 -4 4        SAVE
-JetSmeared2_Phi	      -inf       +inf		    -	            -	            1        100 -4 4        SAVE
-JetSmeared2_M	      -inf       +inf		    -	            -	            1        1000 0 10000        SAVE
-DijetSmeared_Pt	      0          +inf		    -	            -	            1        500 0 5000        SAVE
-DijetSmeared_Eta	      -inf       +inf		    -	            -	            1        100 -4 4        SAVE
-DijetSmeared_Phi	      -inf       +inf		    -	            -	            1        100 -4 4        SAVE
-DijetSmeared_M	      -inf       +inf		    -	            -	            1        1000 0 10000        SAVE

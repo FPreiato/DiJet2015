@@ -1,11 +1,12 @@
 #define baseClass_cxx
 #include "baseClass.h"
 //#include <boost/lexical_cast.hpp>
+#include "TFileService.h"
 
 baseClass::baseClass(string * inputList, string * cutFile, string * treeName, string * outputFileName, string * cutEfficFile):
   PileupWeight_ ( 1.0 ),
   fillSkim_                         ( true ) ,
-  // see -> tolti questi, salva solo quelli NoCuts
+  // see -> tolti questi, salva solo quelli con NoCuts 
   // fillAllPreviousCuts_              ( true ) ,
   // fillAllOtherCuts_                 ( true ) ,
   // fillAllSameLevelAndLowerLevelCuts_( true ) ,
@@ -74,6 +75,10 @@ void baseClass::init()
 
   //directly from string
   output_root_ = new TFile((*outputFileName_ + ".root").c_str(),"RECREATE");
+
+
+
+  std::cout<<"Creating output file "<< std::endl;
 
   // Skim stuff
   produceSkim_ = false;
@@ -388,11 +393,11 @@ void baseClass::readCutFile()
 	  string s1;
 	  if(skimWasMade_)
 	    {
-	      s1 = "cutHisto_skim___________________" + thisCut.variableName;
+	      s1 = "cutHisto_skim_____" + thisCut.variableName;
 	    }
 	  else
 	    {
-	      s1 = thisCut.variableName;
+	       s1 = "cutHisto_noCuts_____" + thisCut.variableName;
 	    }
 	  string s2 = "cutHisto_allPreviousCuts________" + thisCut.variableName;
 	  string s3 = "cutHisto_allOthrSmAndLwrLvlCuts_" + thisCut.variableName;
@@ -408,7 +413,7 @@ void baseClass::readCutFile()
 	  thisCut.histo3.Sumw2();
 	  thisCut.histo4.Sumw2();
 	  thisCut.histo5.Sumw2();
-	  // Filled event by event
+	  //Filled event by event
 	  thisCut.filled = false;
 	  thisCut.value = 0;
 	  thisCut.weight = 1;
@@ -835,18 +840,6 @@ string baseClass::getPreCutString1(const string& s)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 double baseClass::getCutMinValue1(const string& s)
 {
   double ret;
@@ -1017,11 +1010,11 @@ bool baseClass::writeCutHistos()
 {
   bool ret = true;
   output_root_->cd();
-  for (vector<string>::iterator it = orderedCutNames_.begin();
-       it != orderedCutNames_.end(); it++)
+
+  for (vector<string>::iterator it = orderedCutNames_.begin(); it != orderedCutNames_.end(); it++)
     {
       cut * c = & (cutName_cut_.find(*it)->second);
-      if ( fillSkim_                          ) c->histo1.Write();
+      if ( fillSkim_                          )	c->histo1.Write();
       if ( fillAllPreviousCuts_               ) c->histo2.Write();
       if ( fillAllOtherCuts_                  ) c->histo4.Write();
 #ifdef SAVE_ALL_HISTOGRAMS 
@@ -1029,10 +1022,12 @@ bool baseClass::writeCutHistos()
       if ( fillAllCuts_                       ) c->histo5.Write();
 #endif // SAVE_ALL_HISTOGRAMS
     }
-
+  
   // Any failure mode to implement?
   return ret;
 }
+
+
 
 bool baseClass::updateCutEffic()
 {
@@ -1527,7 +1522,6 @@ void baseClass::CreateAndFillUserTProfile(const char* nameAndTitle, Int_t nbinsx
 
 bool baseClass::writeUserHistos()
 {
-
   bool ret = true;
   output_root_->cd();
 
@@ -1712,3 +1706,5 @@ void baseClass::fillTriggerVariable ( const char * hlt_path, const char* variabl
   if ( triggerFired (hlt_path) ) fillVariableWithValue(variable_name, prescale      ) ; 
   else                           fillVariableWithValue(variable_name, prescale * -1 ) ;
 }
+
+

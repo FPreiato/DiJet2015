@@ -16,13 +16,6 @@
 #include "etaBinning.h"
 
 bool verbose = false;
-int Ev_Initial;
-int Ev_NPartons;
-int Ev_PartonsOK;
-int Ev_NGenJet;
-int Ev_GenJetOK;
-int Ev_NRecoJet;
-int Ev_RecoJetOK;
 
 // Reading file with Smearing Functions
 TFile file1("/cmshome/fpreiato/DiJet/test/CMSSW_7_4_14/src/CMSDIJET/DijetRootTreeAnalyzer/output/rootFile_smearing.root");
@@ -52,35 +45,14 @@ analysisClass::analysisClass(string * inputList, string * cutFile, string * tree
 
 analysisClass::~analysisClass()
 {
-  TH1D *EvCounter = new TH1D("EvCounter","",10, -0.5 , 9.5);
+  std::cout << "analysisClass::~analysisClass(): begins " << std::endl;
   
-  EvCounter -> GetXaxis()->SetBinLabel(1,"Initial ev.");
-  EvCounter -> GetXaxis()->SetBinLabel(2,"N(partons)>2");
-  EvCounter -> GetXaxis()->SetBinLabel(3,"Partons ok");
-  EvCounter -> GetXaxis()->SetBinLabel(4,"N(GenJet)>2");
-  EvCounter -> GetXaxis()->SetBinLabel(5,"GenJet OK");
-  EvCounter -> GetXaxis()->SetBinLabel(6,"N(RecoJet)>2");
-  EvCounter -> GetXaxis()->SetBinLabel(7,"RecoJet OK");
-  
-  EvCounter -> SetBinContent(1,Ev_Initial);
-  EvCounter -> SetBinContent(2,Ev_NPartons);
-  EvCounter -> SetBinContent(3,Ev_PartonsOK);
-  EvCounter -> SetBinContent(4,Ev_NGenJet);
-  EvCounter -> SetBinContent(5,Ev_GenJetOK);
-  EvCounter -> SetBinContent(6,Ev_NRecoJet);
-  EvCounter -> SetBinContent(7,Ev_RecoJetOK);
-
-  output_root_ -> cd();   
-  EvCounter -> Write();
-
-  std::cout << "analysisClass::~analysisClass(): begins " << std::endl;  
   std::cout << "analysisClass::~analysisClass(): ends " << std::endl;
 }
 
 
 void analysisClass::Loop()
 {
-   std::cout << "Running Closure Test" <<std::endl;   
   std::cout << "analysisClass::Loop() begins" <<std::endl;   
   
   if (fChain == 0) return;
@@ -105,8 +77,6 @@ void analysisClass::Loop()
     ////////////////////// User's code starts here ///////////////////////
     ///Stuff to be done for every event
     resetCuts();
-
-     Ev_Initial++;
     
     // Define partons from the resonance
     TLorentzVector p1, p2;
@@ -119,9 +89,7 @@ void analysisClass::Loop()
     int n_partons = gen_pt->size();
     
     if(n_partons < 2) continue;
-
-    Ev_NPartons++;    
-
+    
     p1.SetPxPyPzE(gen_px->at(n_partons -2) , gen_py->at(n_partons -2) , gen_pz->at(n_partons -2), gen_energy->at(n_partons -2) );
     p1_pdgId = gen_pdgId -> at(n_partons-2);
     p2.SetPxPyPzE(gen_px->at(n_partons -1 ) , gen_py->at(n_partons -1) , gen_pz->at(n_partons -1), gen_energy->at(n_partons -1) );
@@ -142,8 +110,6 @@ void analysisClass::Loop()
     
     if( parton1.Pt()<0 || parton2.Pt()<0 ) continue ;
     
-    Ev_PartonsOK++;
-
     if(verbose){
       cout<<"Parton 1"<<endl;
       cout<< "Pt: "<<parton1.Pt()<<"         Eta: "<< parton1.Eta()<<"         Phi: "<<parton1.Phi()<<"          M: "<<parton1.M()<<" pdgId: "<<parton1_pdgId<<endl;
@@ -163,14 +129,10 @@ void analysisClass::Loop()
     double GenwideJetDeltaR_ = getPreCutValue1("DeltaR");
     
     if(no_Genjets_ak4 < 2) continue;
-
-    Ev_NGenJet++;
     
     if( fabs(jetEtaGenAK4->at(0)) > getPreCutValue1("jetFidRegion") || jetPtGenAK4->at(0) < getPreCutValue1("pt0Cut") ) continue;
     if( fabs(jetEtaGenAK4->at(1)) > getPreCutValue1("jetFidRegion") || jetPtGenAK4->at(1) < getPreCutValue1("pt1Cut") ) continue;
     
-    Ev_GenJetOK++;
-
     //TLorentzVector leading Genjet 
     Genjet1.SetPtEtaPhiM(jetPtGenAK4->at(0), jetEtaGenAK4->at(0), jetPhiGenAK4->at(0), jetMassGenAK4->at(0) );
     Genjet2.SetPtEtaPhiM(jetPtGenAK4->at(1), jetEtaGenAK4->at(1), jetPhiGenAK4->at(1), jetMassGenAK4->at(1) );
@@ -195,7 +157,10 @@ void analysisClass::Loop()
 	}
       }    
     }//end of ak4 loop
-        
+    
+    if( fabs(Genwj1_tmp.Eta() ) > 2.5 || fabs(Genwj2_tmp.Eta() ) > 2.5) continue;
+    if( Genwj1_tmp.Pt() <30 || Genwj2_tmp.Pt() <30) continue;
+    
     double DeltaR_GenWidejet1_tmp_parton1 = Genwj1_tmp.DeltaR(parton1);     
     double DeltaR_GenWidejet2_tmp_parton1 = Genwj2_tmp.DeltaR(parton1);     
     
@@ -226,7 +191,94 @@ void analysisClass::Loop()
     Genwdijet = Genwj1 + Genwj2;
     
     //+++++++++++++++++++++++++++
-    // Reco-level: from smearing function 
+    // Reco-level: construct the WideJet from recojet ak4     
+    size_t no_jets_ak4=jetPtAK4->size();
+    TLorentzVector jet1, jet2, dijet;
+    TLorentzVector wj1_tmp, wj2_tmp;
+    TLorentzVector wj1, wj2, wdijet;
+    double wideJetDeltaR_ = getPreCutValue1("DeltaR");
+    
+    if(no_jets_ak4<2) continue;
+    
+    if(fabs(jetEtaAK4->at(0)) > getPreCutValue1("jetFidRegion") || jetPtAK4->at(0) < getPreCutValue1("pt0Cut")) continue;
+    if(fabs(jetEtaAK4->at(1)) > getPreCutValue1("jetFidRegion") || jetPtAK4->at(1) < getPreCutValue1("pt1Cut")) continue;
+    
+    //    TLorentzVector jet1, jet2 leading reco jet
+    jet1.SetPtEtaPhiM(jetPtAK4->at(0),jetEtaAK4->at(0),jetPhiAK4->at(0),jetMassAK4->at(0));
+    jet2.SetPtEtaPhiM(jetPtAK4->at(1),jetEtaAK4->at(1),jetPhiAK4->at(1),jetMassAK4->at(1));
+    
+    for(Long64_t ijet=0; ijet<no_jets_ak4; ijet++){ //jet loop for ak4
+      TLorentzVector currentJet;
+      
+      if(fabs(jetEtaAK4->at(ijet)) < getPreCutValue1("jetFidRegion") 
+	 && idTAK4->at(ijet) == getPreCutValue1("tightJetID") 
+	 && jetPtAK4->at(ijet) > getPreCutValue1("ptCut")) {       
+	
+	TLorentzVector currentJet;  
+	currentJet.SetPtEtaPhiM(jetPtAK4->at(ijet),jetEtaAK4->at(ijet),jetPhiAK4->at(ijet),jetMassAK4->at(ijet));   
+	
+	double DeltaR1 = currentJet.DeltaR(jet1);
+	double DeltaR2 = currentJet.DeltaR(jet2);
+	
+	if(DeltaR1 < DeltaR2 && DeltaR1 < wideJetDeltaR_){
+	  wj1_tmp += currentJet;
+	} else if(DeltaR2 < wideJetDeltaR_){
+	  wj2_tmp += currentJet;
+	}
+      }			 
+    } //end of ak4 jet loop		     
+    
+    if( wj1_tmp.Pt()<0 || wj2_tmp.Pt()<0 ) continue;
+    
+    double DeltaR_Widejet1_tmp_parton1 = wj1_tmp.DeltaR(parton1);     
+    double DeltaR_Widejet2_tmp_parton1 = wj2_tmp.DeltaR(parton1);     
+    
+    if(DeltaR_Widejet1_tmp_parton1 < DeltaR_Widejet2_tmp_parton1){
+      wj1 = wj1_tmp;
+      wj2 = wj2_tmp;
+    } else{
+      wj1 = wj2_tmp; 
+      wj2 = wj1_tmp; 
+    }
+    
+    // check the spatial resolution Widejet-Parton
+    double Eta_difference_Widejet1_parton1 = wj1.Eta() - parton1.Eta();
+    double Phi_difference_Widejet1_parton1 = wj1.Phi() - parton1.Phi() ;
+    double DeltaR_WideJet1_parton1            = wj1.DeltaR(parton1);
+    double Eta_difference_Widejet2_parton2 = wj2.Eta() - parton2.Eta() ;
+    double Phi_difference_Widejet2_parton2 = wj2.Phi() - parton2.Phi() ;
+    double DeltaR_WideJet2_parton2            = wj2.DeltaR(parton2);
+    double Angle_Widejet1_parton1 = wj1.Angle(parton1.Vect());
+    double Angle_Widejet2_parton2= wj2.Angle(parton2.Vect());
+    double Angle_Partons= parton1.Angle(parton2.Vect());
+    
+    CreateAndFillUserTH1D("H_Eta_difference_Widejet1_parton1", 100, -2. , 2. , Eta_difference_Widejet1_parton1);
+    CreateAndFillUserTH1D("H_Phi_difference_Widejet1_parton1", 100, -2. , 2. , Phi_difference_Widejet1_parton1);
+    CreateAndFillUserTH1D("H_Eta_difference_Widejet2_parton2", 100, -2. , 2. , Eta_difference_Widejet2_parton2);
+    CreateAndFillUserTH1D("H_Phi_difference_Widejet2_parton2", 100, -2. , 2. , Phi_difference_Widejet2_parton2);       
+    CreateAndFillUserTH1D("H_DeltaR_WideJet1_parton1", 100, 0. , 3. , DeltaR_WideJet1_parton1);
+    CreateAndFillUserTH1D("H_DeltaR_WideJet2_parton2", 100, 0. , 3. , DeltaR_WideJet1_parton1);
+    CreateAndFillUserTH1D("H_Angle_difference_WideJet1_parton1", 100, -3.15 , 3.15, Angle_Widejet1_parton1 );
+    CreateAndFillUserTH1D("H_Angle_difference_WideJet2_parton2", 100, -3.15 , 3.15, Angle_Widejet2_parton2 );
+    CreateAndFillUserTH1D("H_Angle_difference_Partons", 100, -3.15 , 3.15, Angle_Partons );     
+    
+    if(verbose){
+      cout<<"WideJet 1"<<endl;
+      cout<< "Pt: "<<wj1.Pt()<<"         Eta: "<< wj1.Eta()<<"         Phi: "<<wj1.Phi()<<"         M: "<<wj1.M()<<endl;
+      cout<<"WideJet 2"<<endl;
+      cout<< "Pt: "<<wj2.Pt()<<"         Eta: "<< wj2.Eta()<<"         Phi: "<<wj2.Phi()<<"         M: "<<wj2.M()<<endl;
+    }
+    // Create dijet system
+    wdijet = wj1 + wj2;
+    
+    //++++++++ SMEARING ++++++++
+    
+    double DeltaR_WideJet1_GenWideJet1 = wj1.DeltaR(Genwj1);     
+    double DeltaR_WideJet2_GenWideJet2 = wj2.DeltaR(Genwj2);     
+    
+    CreateAndFillUserTH1D("H_DeltaR_WideJet1_GenWideJet1", 100, 0. , 3. , DeltaR_WideJet1_GenWideJet1);
+    CreateAndFillUserTH1D("H_DeltaR_WideJet2_GenWideJet2", 100, 0. , 3. , DeltaR_WideJet2_GenWideJet2);
+    
     double Parton_pdgId[2];
     double GenWideJet_Pt[2];
     double GenWideJet_Eta[2];
@@ -242,17 +294,22 @@ void analysisClass::Loop()
     GenWideJet_Eta[1] = Genwj2.Eta();
     GenWideJet_Phi[1] = Genwj2.Phi();
     GenWideJet_M[1]   = Genwj2.M();    
-
+    
+    // Geometrical matching
+    if(DeltaR_WideJet1_GenWideJet1 > 0.3 || DeltaR_WideJet2_GenWideJet2 > 0.3) continue;
+    
+    CreateAndFillUserTH1D("H_DeltaR_WideJet1_GenWideJet1_Match", 100, 0. , 3. , DeltaR_WideJet1_GenWideJet1);
+    CreateAndFillUserTH1D("H_DeltaR_WideJet2_GenWideJet2_Match", 100, 0. , 3. , DeltaR_WideJet2_GenWideJet2);
+    
     double factor;
     double JetSmeared_Pt[2]   ={-1001, -1001};
     double JetSmeared_Eta[2] ={-1001, -1001};
     double JetSmeared_Phi[2] ={-1001, -1001};
     double JetSmeared_M[2]   ={-1001, -1001};
     
-    TLorentzVector wj1_tmp, wj2_tmp;
-    TLorentzVector wj1, wj2;
-    TLorentzVector wdijet;
-
+    TLorentzVector JetSmeared1_tmp, JetSmeared2_tmp;
+    TLorentzVector JetSmeared1, JetSmeared2;
+    
     for(int kk = 0 ; kk < 2 ; kk++){ // loop on GenWidejets
       
       int etaBin = mEtaBinning.getBin( fabs(GenWideJet_Eta[kk]) );
@@ -269,7 +326,7 @@ void analysisClass::Loop()
 	cout<<"etaBin.first  "<< etaBins.first << "    etaBin.second   "<<etaBins.second<<endl;
 	cout<<"ptBin.first  "<< pt_bin.first << "    ptBin.second   "<<pt_bin.second<<endl;
       }
-
+      
       TString responseName;
       
       // Categories
@@ -315,79 +372,44 @@ void analysisClass::Loop()
       
       TH1F *h = (TH1F*)file1.Get("smearingFunction/"+responseName);
       
-      // if( h ->Integral() == 0){
-      // factor = 1;
-      // }else{
-      // factor = h ->GetRandom();
-      // }
+	      // if( h ->Integral() == 0){
+	      // factor = 1;
+	      // }else{
+	      // factor = h ->GetRandom();
+	      // }
       
       factor = h ->GetRandom();
       
       CreateAndFillUserTH1D("H_SmearingFactor", 150, 0 , 2. ,  factor);
-      
+
       // Define smeared jet	      
       JetSmeared_Pt[kk]   = GenWideJet_Pt[kk] * factor ;
       JetSmeared_Eta[kk] = GenWideJet_Eta[kk] ;
       JetSmeared_Phi[kk] = GenWideJet_Phi[kk] ;
       JetSmeared_M[kk]   = GenWideJet_M[kk] ;
-      
-    }
-    
-    wj1_tmp.SetPtEtaPhiM(JetSmeared_Pt[0], JetSmeared_Eta[0], JetSmeared_Phi[0], JetSmeared_M[0] );
-    wj2_tmp.SetPtEtaPhiM(JetSmeared_Pt[1], JetSmeared_Eta[1], JetSmeared_Phi[1], JetSmeared_M[1] );
-    
-    if( wj1_tmp.Pt()<0 || wj2_tmp.Pt()<0 ) continue;
 
-    Ev_NRecoJet++;
-    Ev_RecoJetOK++;
-    
-    double DeltaR_Widejet1_tmp_parton1 = wj1_tmp.DeltaR(parton1);     
-    double DeltaR_Widejet2_tmp_parton1 = wj2_tmp.DeltaR(parton1);     
-    
-    if(DeltaR_Widejet1_tmp_parton1 < DeltaR_Widejet2_tmp_parton1){
-      wj1 = wj1_tmp;
-      wj2 = wj2_tmp;
-    } else{
-      wj1 = wj2_tmp; 
-      wj2 = wj1_tmp; 
-    } 
-    
-    // check the spatial resolution Widejet-Parton
-    double Eta_difference_Widejet1_parton1 = wj1.Eta() - parton1.Eta();
-    double Phi_difference_Widejet1_parton1 = wj1.Phi() - parton1.Phi() ;
-    double DeltaR_WideJet1_parton1            = wj1.DeltaR(parton1);
-    double Eta_difference_Widejet2_parton2 = wj2.Eta() - parton2.Eta() ;
-    double Phi_difference_Widejet2_parton2 = wj2.Phi() - parton2.Phi() ;
-    double DeltaR_WideJet2_parton2            = wj2.DeltaR(parton2);
-    double Angle_Widejet1_parton1 = wj1.Angle(parton1.Vect());
-    double Angle_Widejet2_parton2= wj2.Angle(parton2.Vect());
-    double Angle_Partons= parton1.Angle(parton2.Vect());
-    
-    CreateAndFillUserTH1D("H_Eta_difference_Widejet1_parton1", 100, -2. , 2. , Eta_difference_Widejet1_parton1);
-    CreateAndFillUserTH1D("H_Phi_difference_Widejet1_parton1", 100, -2. , 2. , Phi_difference_Widejet1_parton1);
-    CreateAndFillUserTH1D("H_Eta_difference_Widejet2_parton2", 100, -2. , 2. , Eta_difference_Widejet2_parton2);
-    CreateAndFillUserTH1D("H_Phi_difference_Widejet2_parton2", 100, -2. , 2. , Phi_difference_Widejet2_parton2);       
-    CreateAndFillUserTH1D("H_DeltaR_WideJet1_parton1", 100, 0. , 3. , DeltaR_WideJet1_parton1);
-    CreateAndFillUserTH1D("H_DeltaR_WideJet2_parton2", 100, 0. , 3. , DeltaR_WideJet1_parton1);
-    CreateAndFillUserTH1D("H_Angle_difference_WideJet1_parton1", 100, -3.15 , 3.15, Angle_Widejet1_parton1 );
-    CreateAndFillUserTH1D("H_Angle_difference_WideJet2_parton2", 100, -3.15 , 3.15, Angle_Widejet2_parton2 );
-    CreateAndFillUserTH1D("H_Angle_difference_Partons", 100, -3.15 , 3.15, Angle_Partons );     
-    
-    if(verbose){
-      cout<<"WideJet 1"<<endl;
-      cout<< "Pt: "<<wj1.Pt()<<"         Eta: "<< wj1.Eta()<<"         Phi: "<<wj1.Phi()<<"         M: "<<wj1.M()<<endl;
-      cout<<"WideJet 2"<<endl;
-      cout<< "Pt: "<<wj2.Pt()<<"         Eta: "<< wj2.Eta()<<"         Phi: "<<wj2.Phi()<<"         M: "<<wj2.M()<<endl;
     }
-    // Create dijet system
-    wdijet = wj1 + wj2;
+  
+    // check but probably it doesn't necessary    
+    if(JetSmeared_Pt[0] <0 || JetSmeared_Pt[1] <0) continue;
     
-    double DeltaR_WideJet1_GenWideJet1 = wj1.DeltaR(Genwj1);     
-    double DeltaR_WideJet2_GenWideJet2 = wj2.DeltaR(Genwj2);     
+    JetSmeared1_tmp.SetPtEtaPhiM(JetSmeared_Pt[0], JetSmeared_Eta[0], JetSmeared_Phi[0], JetSmeared_M[0] );
+    JetSmeared2_tmp.SetPtEtaPhiM(JetSmeared_Pt[1], JetSmeared_Eta[1], JetSmeared_Phi[1], JetSmeared_M[1] );
     
-    CreateAndFillUserTH1D("H_DeltaR_WideJet1_GenWideJet1", 100, 0. , 3. , DeltaR_WideJet1_GenWideJet1);
-    CreateAndFillUserTH1D("H_DeltaR_WideJet2_GenWideJet2", 100, 0. , 3. , DeltaR_WideJet2_GenWideJet2);
-     
+    double dR1 = JetSmeared1_tmp.DeltaR(wj1);
+    double dR2 = JetSmeared2_tmp.DeltaR(wj1);
+    
+    if(dR1 < dR2){
+      JetSmeared1 = JetSmeared1_tmp ;
+      JetSmeared2 = JetSmeared2_tmp ;
+    }else{
+      JetSmeared1 = JetSmeared2_tmp ;
+      JetSmeared2 = JetSmeared1_tmp ;
+    }
+    
+    TLorentzVector DijetSmeared;           
+    DijetSmeared = JetSmeared1 + JetSmeared2 ;
+    
     //++++++++++++++++++++++++++++++++++++++++++++++
     //== Fill Variables ==
     
@@ -433,6 +455,18 @@ void analysisClass::Loop()
     fillVariableWithValue("dijetWide_Eta", wdijet.Eta() );     
     fillVariableWithValue("dijetWide_Phi", wdijet.Phi() );     
     fillVariableWithValue("dijetWide_M", wdijet.M() );     
+    fillVariableWithValue("JetSmeared1_Pt", JetSmeared1.Pt() );
+    fillVariableWithValue("JetSmeared1_Eta", JetSmeared1.Eta() );
+    fillVariableWithValue("JetSmeared1_Phi", JetSmeared1.Phi() );
+    fillVariableWithValue("JetSmeared1_M", JetSmeared1.M() );
+    fillVariableWithValue("JetSmeared2_Pt", JetSmeared2.Pt() );
+    fillVariableWithValue("JetSmeared2_Eta", JetSmeared2.Eta() );
+    fillVariableWithValue("JetSmeared2_Phi", JetSmeared2.Phi() );
+    fillVariableWithValue("JetSmeared2_M", JetSmeared2.M() );
+    fillVariableWithValue("DijetSmeared_Pt", DijetSmeared.Pt() );
+    fillVariableWithValue("DijetSmeared_Eta", DijetSmeared.Eta() );
+    fillVariableWithValue("DijetSmeared_Phi", DijetSmeared.Phi() );
+    fillVariableWithValue("DijetSmeared_M", DijetSmeared.M() );
     
     // Evaluate cuts (but do not apply them)
     evaluateCuts();

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Mon Nov  2 18:13:33 2015 by ROOT version 5.34/18
+// Tue Nov  3 19:28:42 2015 by ROOT version 6.02/05
 // from TChain dijets/events/
 //////////////////////////////////////////////////////////
 
@@ -17,38 +17,38 @@ using namespace std;
 #include <TFile.h>
 
 // Header file for the classes stored in the TTree if any.
-#include <vector>
-#include <vector>
-#include <vector>
-
-// Fixed size dimensions of array or collections stored in the TTree if any.
-const Int_t kMaxrun = 1;
-const Int_t kMaxevt = 1;
-const Int_t kMaxlumi = 1;
-const Int_t kMaxnVtx = 1;
-const Int_t kMaxrho = 1;
-const Int_t kMaxmet = 1;
-const Int_t kMaxmetSig = 1;
-const Int_t kMaxnJetsAK4 = 1;
-const Int_t kMaxhtAK4 = 1;
-const Int_t kMaxmjjAK4 = 1;
-const Int_t kMaxdEtajjAK4 = 1;
-const Int_t kMaxdPhijjAK4 = 1;
-const Int_t kMaxnJetsAK8 = 1;
-const Int_t kMaxhtAK8 = 1;
-const Int_t kMaxmjjAK8 = 1;
-const Int_t kMaxdEtajjAK8 = 1;
-const Int_t kMaxdPhijjAK8 = 1;
-const Int_t kMaxptHat = 1;
-const Int_t kMaxprocessID = 1;
-const Int_t kMaxweight = 1;
-const Int_t kMaxnGenJetsAK4 = 1;
-const Int_t kMaxnGenJetsAK8 = 1;
+#include "vector"
+#include "vector"
+#include "vector"
 
 class rootNtupleClass {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
+
+// Fixed size dimensions of array or collections stored in the TTree if any.
+   const Int_t kMaxrun = 1;
+   const Int_t kMaxevt = 1;
+   const Int_t kMaxlumi = 1;
+   const Int_t kMaxnVtx = 1;
+   const Int_t kMaxrho = 1;
+   const Int_t kMaxmet = 1;
+   const Int_t kMaxmetSig = 1;
+   const Int_t kMaxnJetsAK4 = 1;
+   const Int_t kMaxhtAK4 = 1;
+   const Int_t kMaxmjjAK4 = 1;
+   const Int_t kMaxdEtajjAK4 = 1;
+   const Int_t kMaxdPhijjAK4 = 1;
+   const Int_t kMaxnJetsAK8 = 1;
+   const Int_t kMaxhtAK8 = 1;
+   const Int_t kMaxmjjAK8 = 1;
+   const Int_t kMaxdEtajjAK8 = 1;
+   const Int_t kMaxdPhijjAK8 = 1;
+   const Int_t kMaxptHat = 1;
+   const Int_t kMaxprocessID = 1;
+   const Int_t kMaxweight = 1;
+   const Int_t kMaxnGenJetsAK4 = 1;
+   const Int_t kMaxnGenJetsAK8 = 1;
 
    // Declaration of leaf types
    Int_t           runNo;

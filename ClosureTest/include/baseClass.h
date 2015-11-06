@@ -18,6 +18,9 @@
 #include <TProfile.h>
 #include <math.h>
 #include <stdlib.h>
+//federico
+#include "etaBinning.h"
+#include "ptBinning.h"
 
 #define STDOUT(STRING) {		   \
 	std::cout << __FILE__ <<" - Line "<<__LINE__<<" - "<<__FUNCTION__<<": "<< STRING <<std::endl;   \
@@ -205,6 +208,10 @@ class baseClass : public rootNtupleClass {
   PileupReweighter pileupReweighter_;
 
   TFile * output_root_;
+
+  EtaBinning mEtaBinning;                                                                                              
+  PtBinning mPtBinning;     
+
 
   private :
   int nOptimizerCuts_;
