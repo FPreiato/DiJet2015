@@ -50,6 +50,49 @@ analysisClass::analysisClass(string * inputList, string * cutFile, string * tree
 
   outputFileNameSmearing_ = outputFileName;
 
+ // For JECs
+  if( int(getPreCutValue1("useJECs"))==1 )
+  {
+    std::cout << "Reapplying JECs on the fly" << std::endl;
+    //std::string L1Path = "/cmshome/gdimperi/Dijet/CMSDIJETrepo/CMSSW_7_4_6_patch6/src/CMSDIJET/DijetRootTreeMaker/data/Summer15_V5/Summer15_V5_MC_L1FastJet_AK4PFchs.txt";
+    //std::string L2Path = "/cmshome/gdimperi/Dijet/CMSDIJETrepo/CMSSW_7_4_6_patch6/src/CMSDIJET/DijetRootTreeMaker/data/Summer15_V5/Summer15_V5_MC_L2Relative_AK4PFchs.txt"; 
+    //std::string L3Path = "/cmshome/gdimperi/Dijet/CMSDIJETrepo/CMSSW_7_4_6_patch6/src/CMSDIJET/DijetRootTreeMaker/data/Summer15_V5/Summer15_V5_MC_L3Absolute_AK4PFchs.txt";
+    //
+    std::string L1Path = "data/Summer15_25nsV6_MC/Summer15_25nsV6_MC_L1FastJet_AK4PFchs.txt";
+    std::string L2Path = "data/Summer15_25nsV6_MC/Summer15_25nsV6_MC_L2Relative_AK4PFchs.txt"; 
+    std::string L3Path = "data/Summer15_25nsV6_MC/Summer15_25nsV6_MC_L3Absolute_AK4PFchs.txt";
+    std::string L1DATAPath = "data/Summer15_25nsV6_DATA/Summer15_25nsV6_DATA_L1FastJet_AK4PFchs.txt";
+    std::string L2DATAPath = "data/Summer15_25nsV6_DATA/Summer15_25nsV6_DATA_L2Relative_AK4PFchs.txt"; 
+    std::string L3DATAPath = "data/Summer15_25nsV6_DATA/Summer15_25nsV6_DATA_L3Absolute_AK4PFchs.txt";
+    std::string L2L3ResidualPath = "data/Summer15_25nsV6_DATA/Summer15_25nsV6_DATA_L2L3Residual_AK4PFchs.txt" ;
+    
+    L1Par = new JetCorrectorParameters(L1Path);
+    L2Par = new JetCorrectorParameters(L2Path);
+    L3Par = new JetCorrectorParameters(L3Path);
+    L1DATAPar = new JetCorrectorParameters(L1DATAPath);
+    L2DATAPar = new JetCorrectorParameters(L2DATAPath);
+    L3DATAPar = new JetCorrectorParameters(L3DATAPath);
+    L2L3Residual = new JetCorrectorParameters(L2L3ResidualPath);
+
+    std::vector<JetCorrectorParameters> vPar;
+    std::vector<JetCorrectorParameters> vPar_data;
+    vPar.push_back(*L1Par);
+    vPar.push_back(*L2Par);
+    vPar.push_back(*L3Par);
+   
+    //residuals are applied only to data
+    vPar_data.push_back(*L1DATAPar);
+    vPar_data.push_back(*L2DATAPar);
+    vPar_data.push_back(*L3DATAPar);
+    vPar_data.push_back(*L2L3Residual);
+
+    JetCorrector = new FactorizedJetCorrector(vPar);
+    JetCorrector_data = new FactorizedJetCorrector(vPar_data);
+
+    //uncertainty
+    //    unc = new JetCorrectionUncertainty("data/Summer15_25nsV6_DATA/Summer15_25nsV6_DATA_Uncertainty_AK4PFchs.txt");
+  }
+
   std::cout << "analysisClass::analysisClass(): ends " << std::endl;
 
 }
@@ -99,13 +142,18 @@ void analysisClass::Loop()
      cout<<"Number of categories choosen: "<<n_categories << endl;
    }  
 
- 
    TFile *outputSmearing_root = new TFile((*outputFileNameSmearing_ + "_smearing.root").c_str(),"RECREATE");
    fwlite::TFileService fs(outputSmearing_root);
    Step_pt.SetVal(mPtBinning.get_PtStep()) ;
+   cout<<Step_pt.GetVal() <<endl;
    NCategory.SetVal(n_categories) ;
+   cout<<NCategory.GetVal() <<endl;
+   NFile.SetVal(1) ;
+   cout<<NFile.GetVal()<<endl;
+
    Step_pt.Write("PtStep");
    NCategory.Write("n_categories");
+   NFile.Write("n_files");
    TFileDirectory smearingDir = fs.mkdir("smearingFunction");
    std::vector<std::vector<TH1F*> > smearingFunction_Q ;
    std::vector<std::vector<TH1F*> > smearingFunction_QUp ;
@@ -156,6 +204,31 @@ void analysisClass::Loop()
      ////////////////////// User's code starts here ///////////////////////
      ///Stuff to be done for every event
      resetCuts();
+
+     //find intime BX
+     int idx_InTimeBX=-1;
+     //     cout<<"PileupOriginBX.size() = "<< PileupOriginBX->size() << endl;
+     for(size_t j=0; j<PileupOriginBX->size(); ++j)
+       {
+	 //	 cout <<"PileUpOriginBX->at(j)" << PileupOriginBX->at(j) << endl;	 
+	 if(PileupOriginBX->at(j)==0)
+	   {
+	     idx_InTimeBX = j;
+	     //cout << "idx_InTimeBX: " << idx_InTimeBX << endl; 
+	   }
+       }
+     
+     std::vector<double> jecFactors;
+     std::vector<double> jecUncertainty;
+     // new JECs could change the jet pT ordering. the vector below
+     // holds sorted jet indices after the new JECs had been applied
+     std::vector<unsigned> sortedJetIdx;
+     bool isData = 0;
+     //  cout<<"idx_InTimeBX = "<< idx_InTimeBX << endl;
+     if(idx_InTimeBX > -1 ) isData = 0;
+     else isData = 1;
+     
+     //     cout<<"isData ?"<< isData << endl;
 
      Ev_Initial++;
 
@@ -287,40 +360,137 @@ void analysisClass::Loop()
        TLorentzVector wj1, wj2; 
        TLorentzVector wdijet;
        double wideJetDeltaR_ = getPreCutValue1("DeltaR");
+      
+       
+       //////////////////// JEC
+       if( int(getPreCutValue1("useJECs"))==1 )
+	 {
+	   // sort jets by increasing pT
+	   std::multimap<double, unsigned> sortedJets;
+	   for(size_t j=0; j<no_jets_ak4; ++j)
+	     {
+	       JetCorrector->setJetEta(jetEtaAK4->at(j));
+	       JetCorrector->setJetPt(jetPtAK4->at(j)/jetJecAK4->at(j)); //pTraw
+	       JetCorrector->setJetA(jetAreaAK4->at(j));
+	       JetCorrector->setRho(rho);
+	       
+	       JetCorrector_data->setJetEta(jetEtaAK4->at(j));
+	       JetCorrector_data->setJetPt(jetPtAK4->at(j)/jetJecAK4->at(j)); //pTraw
+	       JetCorrector_data->setJetA(jetAreaAK4->at(j));
+	       JetCorrector_data->setRho(rho);
+	       
+	       //nominal value of JECs
+	       double correction;//, old_correction, nominal_correction;
+	       //if( int(getPreCutValue1("shiftJECs"))==0 ){
+	       if (isData == 1) correction = JetCorrector_data->getCorrection();
+	       else correction = JetCorrector->getCorrection();
+	       //nominal_correction=correction;
+	       //old_correction = jetJecAK4->at(j);
+	       //}
+	       //JEC uncertainties
+	       //	       unc->setJetEta(jetEtaAK4->at(j));
+	       //  unc->setJetPt(jetPtAK4->at(j)/jetJecAK4->at(j)*correction);
+	       // double uncertainty = unc->getUncertainty(true);
+	       // jecUncertainty.push_back(uncertainty); 
+	       
+	       // std::cout << "run:" << runNo << "    lumi:" << lumi << "   event:" << evtNo << "   jet pt:" << jetPtAK4->at(j)/jetJecAK4->at(j)*correction << "   correction:" << correction <<   "   uncertainty:" <<  uncertainty  << "  nominal correction:" << nominal_correction  << " old correction: " << old_correction << std::endl;
+	       //use "shifted" JECs for study of systematic uncertainties 
+	       if( int(getPreCutValue1("shiftJECs"))==1 ){
+	       //flat shift
+	       //if (isData == 1) correction = JetCorrector_data->getCorrection() * getPreCutValue2("shiftJECs");
+	       //else correction = JetCorrector->getCorrection() * getPreCutValue2("shiftJECs");
+	       //shift of the corresponding unc
+	       // ///////////correction = correction + getPreCutValue2("shiftJECs")*uncertainty*correction;
+	       //  std::cout << "run:" << runNo << "    lumi:" << lumi << "   event:" << evtNo << "   jet pt:" << jetPtAK3->at(j)/jetJecAK4->at(j)*correction << "   correction:" << correction << "   uncertainty:" <<  uncertainty  << std::endl << std::endl;
+	       
+	       }
+	       
+	     jecFactors.push_back(correction);
+	     sortedJets.insert(std::make_pair((jetPtAK4->at(j)/jetJecAK4->at(j))*correction, j));
+	     
+	     }
+	 // get jet indices in decreasing pT order
+	   for(std::multimap<double, unsigned>::const_reverse_iterator it = sortedJets.rbegin(); it != sortedJets.rend(); ++it)
+	     sortedJetIdx.push_back(it->second);
+	   
+	 }
+       else if( int(getPreCutValue1("noJECs"))==1  )
+	 {
+	   // sort jets by increasing pT
+	   std::multimap<double, unsigned> sortedJets;
+	   for(size_t j=0; j<no_jets_ak4; ++j) //same ordering of original root trees
+	     {
+	       //	       jecUncertainty.push_back(0.); 
+	       jecFactors.push_back(1.);
+	       sortedJets.insert(std::make_pair((jetPtAK4->at(j)/jetJecAK4->at(j)), j)); //raw
+	     }       
+	   // get jet indices in decreasing pT order
+	   for(std::multimap<double, unsigned>::const_reverse_iterator it = sortedJets.rbegin(); it != sortedJets.rend(); ++it)
+	     sortedJetIdx.push_back(it->second);
+	 }
+       else
+	 {
+	   for(size_t j=0; j<no_jets_ak4; ++j) //same ordering of original root trees
+	     {
+	       jecFactors.push_back(jetJecAK4->at(j));
+	       //	       jecUncertainty.push_back(0.); 
+	       sortedJetIdx.push_back(j);
+	     }
+	 }
+       ///////////////////////////////////////////////////
+
+       // JEC applied
        
        if(no_jets_ak4<2) continue;
 
-     Ev_NRecoJet++;
-       
-       if(fabs(jetEtaAK4->at(0)) > getPreCutValue1("jetFidRegion") || jetPtAK4->at(0) < getPreCutValue1("pt0Cut")) continue;
-       if(fabs(jetEtaAK4->at(1)) > getPreCutValue1("jetFidRegion") || jetPtAK4->at(1) < getPreCutValue1("pt1Cut")) continue;
-       
-     Ev_RecoJetOK++;
+       Ev_NRecoJet++;
+  
+       if(fabs(jetEtaAK4->at(sortedJetIdx[0])) > getPreCutValue1("jetFidRegion") || (jecFactors[sortedJetIdx[0]]/jetJecAK4->at(sortedJetIdx[0]))*jetPtAK4->at(sortedJetIdx[sortedJetIdx[0]]) < getPreCutValue1("pt0Cut") ) continue;
+       if(fabs(jetEtaAK4->at(sortedJetIdx[1])) > getPreCutValue1("jetFidRegion")  || (jecFactors[sortedJetIdx[1]]/jetJecAK4->at(sortedJetIdx[1]))*jetPtAK4->at(sortedJetIdx[1]) < getPreCutValue1("pt1Cut") ) continue;
 
+       //       if(fabs(jetEtaAK4->at(0)) > getPreCutValue1("jetFidRegion") || jetPtAK4->at(0) < getPreCutValue1("pt0Cut")) continue;
+       //       if(fabs(jetEtaAK4->at(1)) > getPreCutValue1("jetFidRegion") || jetPtAK4->at(1) < getPreCutValue1("pt1Cut")) continue;
+       
+       Ev_RecoJetOK++;
+       
        // TLorentzVector jet1, jet2 leading reco jet
-       jet1.SetPtEtaPhiM(jetPtAK4->at(0), jetEtaAK4->at(0), jetPhiAK4->at(0), jetMassAK4->at(0));
-       jet2.SetPtEtaPhiM(jetPtAK4->at(1), jetEtaAK4->at(1), jetPhiAK4->at(1), jetMassAK4->at(1));
+       jet1.SetPtEtaPhiM( (jecFactors[sortedJetIdx[0]]/jetJecAK4->at(sortedJetIdx[0])) *jetPtAK4->at(sortedJetIdx[0])
+			  ,jetEtaAK4->at(sortedJetIdx[0]),jetPhiAK4->at(sortedJetIdx[0])
+			  , (jecFactors[sortedJetIdx[0]]/jetJecAK4->at(sortedJetIdx[0])) * jetMassAK4->at(sortedJetIdx[0]));
+       jet2.SetPtEtaPhiM( (jecFactors[sortedJetIdx[1]]/jetJecAK4->at(sortedJetIdx[1])) *jetPtAK4->at(sortedJetIdx[1])
+			  ,jetEtaAK4->at(sortedJetIdx[1]),jetPhiAK4->at(sortedJetIdx[1])
+			  , (jecFactors[sortedJetIdx[1]]/jetJecAK4->at(sortedJetIdx[1])) * jetMassAK4->at(sortedJetIdx[1]));
+       
+       //       jet1.SetPtEtaPhiM(jetPtAK4->at(0), jetEtaAK4->at(0), jetPhiAK4->at(0), jetMassAK4->at(0));
+       //       jet2.SetPtEtaPhiM(jetPtAK4->at(1), jetEtaAK4->at(1), jetPhiAK4->at(1), jetMassAK4->at(1));
        
        for(Long64_t ijet=0; ijet<no_jets_ak4; ijet++){ //jet loop for ak4
 	 TLorentzVector currentJet;
 	 
-	 if(fabs(jetEtaAK4->at(ijet)) < getPreCutValue1("jetFidRegion") 
-	    && idTAK4->at(ijet) == getPreCutValue1("tightJetID") 
-	    && jetPtAK4->at(ijet) > getPreCutValue1("ptCut")) {
-	   
-	   TLorentzVector currentJet;
-	   currentJet.SetPtEtaPhiM(jetPtAK4->at(ijet), jetEtaAK4->at(ijet), jetPhiAK4->at(ijet), jetMassAK4->at(ijet));   
-	   
-	   double DeltaR1 = currentJet.DeltaR(jet1);
-	   double DeltaR2 = currentJet.DeltaR(jet2);
-	   
-	   if(DeltaR1 < DeltaR2 && DeltaR1 < wideJetDeltaR_){
-	     wj1_tmp += currentJet;
+	 //	 if(fabs(jetEtaAK4->at(ijet)) < getPreCutValue1("jetFidRegion") 
+	 //	    && idTAK4->at(ijet) == getPreCutValue1("tightJetID") 
+	 //	    && jetPtAK4->at(ijet) > getPreCutValue1("ptCut")) {
+	 if(fabs(jetEtaAK4->at(sortedJetIdx[ijet])) < getPreCutValue1("jetFidRegion") 
+	    && idTAK4->at(sortedJetIdx[ijet]) == getPreCutValue1("tightJetID") 
+	    && (jecFactors[sortedJetIdx[ijet]]/jetJecAK4->at(sortedJetIdx[ijet]))*jetPtAK4->at(sortedJetIdx[ijet]) > getPreCutValue1("ptCut"))
+	   {
+	     
+	     TLorentzVector currentJet;
+	     currentJet.SetPtEtaPhiM( (jecFactors[sortedJetIdx[ijet]]/jetJecAK4->at(sortedJetIdx[ijet])) *jetPtAK4->at(sortedJetIdx[ijet])
+				      ,jetEtaAK4->at(sortedJetIdx[ijet]),jetPhiAK4->at(sortedJetIdx[ijet])
+				      , (jecFactors[sortedJetIdx[ijet]]/jetJecAK4->at(sortedJetIdx[ijet])) *jetMassAK4->at(sortedJetIdx[ijet]));   
+	     //	     currentJet.SetPtEtaPhiM(jetPtAK4->at(ijet), jetEtaAK4->at(ijet), jetPhiAK4->at(ijet), jetMassAK4->at(ijet));   
+	     
+	     double DeltaR1 = currentJet.DeltaR(jet1);
+	     double DeltaR2 = currentJet.DeltaR(jet2);
+	     
+	     if(DeltaR1 < DeltaR2 && DeltaR1 < wideJetDeltaR_){
+	       wj1_tmp += currentJet;
+	     }
+	     else if(DeltaR2 < wideJetDeltaR_){
+	       wj2_tmp += currentJet;
+	     }			 
 	   }
-	   else if(DeltaR2 < wideJetDeltaR_){
-	     wj2_tmp += currentJet;
-	   }			 
-	 }
        } //end of ak4 jet loop		     
        
        if( wj1_tmp.Pt()<0 || wj2_tmp.Pt()<0 ) continue;

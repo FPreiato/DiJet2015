@@ -226,6 +226,7 @@ class baseClass : public rootNtupleClass {
   string * outputFileNameSmearing_;
   TParameter<double> Step_pt;
   TParameter<double> NCategory;
+  TParameter<double> NFile;
 
   EtaBinning mEtaBinning;
   PtBinning mPtBinning;
