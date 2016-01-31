@@ -25,14 +25,28 @@ int Ev_NRecoJet;
 int Ev_RecoJetOK;
 
 // Reading file with Smearing Functions
-TFile file1("/cmshome/fpreiato/DiJet/test/CMSSW_7_4_14/src/CMSDIJET/DijetRootTreeAnalyzer/output/rootFile_smearing.root");
+TFile* smearingFile;
 int n_categories;
+int n_files;
 
 analysisClass::analysisClass(string * inputList, string * cutFile, string * treeName, string * outputFileName, string * cutEfficFile)
   :baseClass(inputList, cutFile, treeName, outputFileName, cutEfficFile)
 {
   std::cout << "analysisClass::analysisClass(): begins " << std::endl;
+
+  static std::string cmsswBase = getenv("CMSSW_BASE");  
+  static std::string pathFile = "/src/CMSDIJET/DijetRootTreeAnalyzer/output";
+  TString smearingFileName = TString::Format("%s/%s/QCD_Spring15_25ns_Summer15V5_july2015_output/Ncat_2/rootfile_QCD_AllPt_smearing.root", cmsswBase.c_str(), pathFile.c_str() );
+
+  smearingFile = TFile::Open(smearingFileName );
   
+  if (smearingFile) {
+    std::cout << "Opened smearing file" << std::endl;
+  }else{
+    std::cout << "Impossible to open smearing file" << std::endl;
+    exit(1);
+  }
+
   string jetAlgo = getPreCutString1("jetAlgo");
   double rParam = getPreCutValue1("DeltaR");
   
@@ -43,8 +57,13 @@ analysisClass::analysisClass(string * inputList, string * cutFile, string * tree
   else 
     fjJetDefinition = JetDefPtr( new fastjet::JetDefinition(fastjet::cambridge_algorithm, rParam) );
   
-  TParameter<double>* cat = static_cast<TParameter<double>*>(file1.Get("n_categories"));
+  TParameter<double>* cat = static_cast<TParameter<double>*>(smearingFile->Get("n_categories"));
+  TParameter<double>* nfiles = static_cast<TParameter<double>*>(smearingFile->Get("n_files"));
   n_categories = cat->GetVal();
+  n_files = nfiles->GetVal();
+  
+  n_categories = n_categories / n_files;
+  
   std::cout << "N categories choose "<< n_categories << std::endl;  
   
   std::cout << "analysisClass::analysisClass(): ends " << std::endl;
@@ -105,6 +124,31 @@ void analysisClass::Loop()
     ////////////////////// User's code starts here ///////////////////////
     ///Stuff to be done for every event
     resetCuts();
+
+  //find intime BX
+     int idx_InTimeBX=-1;
+     //     cout<<"PileupOriginBX.size() = "<< PileupOriginBX->size() << endl;
+     for(size_t j=0; j<PileupOriginBX->size(); ++j)
+       {
+	 //	 cout <<"PileUpOriginBX->at(j)" << PileupOriginBX->at(j) << endl;	 
+	 if(PileupOriginBX->at(j)==0)
+	   {
+	     idx_InTimeBX = j;
+	     //cout << "idx_InTimeBX: " << idx_InTimeBX << endl; 
+	   }
+       }
+
+     std::vector<double> jecFactors;
+     std::vector<double> jecUncertainty;
+     // new JECs could change the jet pT ordering. the vector below
+     // holds sorted jet indices after the new JECs had been applied
+     std::vector<unsigned> sortedJetIdx;
+     bool isData = 0;
+     //  cout<<"idx_InTimeBX = "<< idx_InTimeBX << endl;
+     if(idx_InTimeBX > -1 ) isData = 0;
+     else isData = 1;
+     
+     //     cout<<"isData ?"<< isData << endl;
 
      Ev_Initial++;
     
@@ -313,8 +357,11 @@ void analysisClass::Loop()
 	}
       }
       
-      TH1F *h = (TH1F*)file1.Get("smearingFunction/"+responseName);
+      TH1F *h = (TH1F*)smearingFile->Get("smearingFunction/"+responseName);
       
+
+
+
       // if( h ->Integral() == 0){
       // factor = 1;
       // }else{

@@ -11,7 +11,7 @@ ROOFIT_INCLUDE := $(shell cd $(CMSSW_BASE); scram tool info roofitcore | grep IN
 
 ROOFIT_LIBDIR := $(shell cd $(CMSSW_BASE); scram tool info roofitcore | grep LIBDIR= | sed 's|LIBDIR=||')
 
-INCLUDES = -I$(ROOFIT_INCLUDE)/ -I$(CMSSW_BASE)/src/CMSDIJET/DijetRootTreeAnalyzer/include -I$(boost_header_EX_INCLUDE)
+INCLUDES = -I$(ROOFIT_INCLUDE)/ -I$(CMSSW_BASE)/src/CMSDIJET/DijetRootTreeAnalyzer/ClosureTest/include -I$(boost_header_EX_INCLUDE)
 
 ROOTSYS  ?= ERROR_RootSysIsNotDefined
 

@@ -222,7 +222,7 @@ drawSmearingFunctions.o drawSmearingFunctions.d : drawSmearingFunctions.cpp /usr
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/external/gcc/4.9.1-cms/lib/gcc/x86_64-redhat-linux-gnu/4.9.1/include/float.h \
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/bin/../../../../../../lcg/root/6.02.00-odfocd7/include/TH1F.h \
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/bin/../../../../../../lcg/root/6.02.00-odfocd7/include/TAxis.h \
- Compare.h \
+ drawSmearingFunctions.h \
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/external/gcc/4.9.1-cms/include/c++/4.9.1/sstream \
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/external/gcc/4.9.1-cms/include/c++/4.9.1/bits/sstream.tcc \
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/bin/../../../../../../lcg/root/6.02.00-odfocd7/include/TFile.h \

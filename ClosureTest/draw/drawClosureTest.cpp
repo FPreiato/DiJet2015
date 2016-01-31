@@ -7,19 +7,20 @@
 #include "TH1D.h"
 #include "TH1F.h"
 #include "TAxis.h"
-#include "Compare.h"
+#include "drawClosureTest.h"
+//#include "Compare.h"
+
 
 #include "etaBinning.h"
 #include "ptBinning.h"
 
 #include <TColor.h>
 
-
 int main(int argc, char* argv[]) {
 
   if (argc != 3 && argc != 4) {
 
-    std::cout << "USAGE: ./drawPhotonJet [data_dataset]" << std::endl;
+    std::cout << "USAGE: ./drawPhotonJet [dataset_StandardAnalysis] [dataset_ClosureTest]" << std::endl;
     exit(23);
   }
 
@@ -60,6 +61,7 @@ int main(int argc, char* argv[]) {
   HistoName.push_back(TString::Format("cutHisto_noCuts_____WideJet1_Eta"));
   HistoName.push_back(TString::Format("cutHisto_noCuts_____WideJet2_pT"));
   HistoName.push_back(TString::Format("cutHisto_noCuts_____WideJet2_Eta"));
+  HistoName.push_back(TString::Format("cutHisto_noCuts_____nVtx"));
  
 
   vector<TString> XAxis;
@@ -69,8 +71,9 @@ int main(int argc, char* argv[]) {
   XAxis.push_back(TString::Format("#eta(WideJet1) [GeV]"));
   XAxis.push_back(TString::Format("pT(WideJet2) [GeV]"));
   XAxis.push_back(TString::Format("#eta(WideJet2) [GeV]"));
-
-
+  XAxis.push_back(TString::Format("n vertex"));
+  
+  
   size_t size = HistoName.size();
   std::cout<< size << std::endl;
 
@@ -85,12 +88,23 @@ int main(int argc, char* argv[]) {
     std::cout<< mean_h1 << std::endl; 
     std::cout<< mean_h2 << std::endl;
 
-    // non si possonon cambiare i bin direttamente quando li crea? altrimenti rebin diversi a seconda dell'istogramma processato
-    //    h1->Rebin(5);
-    //    h2->Rebin(5);
+    h1->Rebin(10);
+    h2->Rebin(10);
 
-	 
-    DrawPullAndSave("PlotComparison/", HistoName.at(ii)+".png", h1, h2, XAxis.at(ii) , "Events");
+    Normalizer(h1);
+    Normalizer(h2);
+
+    TLegend* legend = new TLegend(0.70, 0.80, 0.90, 0.90);
+    legend->SetTextFont(42);
+    legend->SetBorderSize(0);
+    legend->SetFillColor(kWhite);
+    legend->SetFillStyle(0);
+    legend->SetTextSize(0.036);
+    legend->AddEntry(h1, "Standard An.", "PL");
+    legend->AddEntry(h2, "Closure", "PL");
+   	 
+    DrawPullAndSave("PlotComparison/", HistoName.at(ii)+"_Pull.png", h1, h2, XAxis.at(ii) , "Events", legend);
+    DrawRatioAndSave("PlotComparison/", HistoName.at(ii)+"_Ratio.png", h1, h2, XAxis.at(ii) , "Events", legend);
     
   }
   

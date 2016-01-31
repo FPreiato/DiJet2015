@@ -222,7 +222,7 @@ drawClosureTest.o drawClosureTest.d : drawClosureTest.cpp /usr/include/stdlib.h 
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/external/gcc/4.9.1-cms/lib/gcc/x86_64-redhat-linux-gnu/4.9.1/include/float.h \
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/bin/../../../../../../lcg/root/6.02.00-odfocd7/include/TH1F.h \
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/bin/../../../../../../lcg/root/6.02.00-odfocd7/include/TAxis.h \
- Compare.h \
+ drawClosureTest.h \
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/external/gcc/4.9.1-cms/include/c++/4.9.1/sstream \
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/external/gcc/4.9.1-cms/include/c++/4.9.1/bits/sstream.tcc \
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/bin/../../../../../../lcg/root/6.02.00-odfocd7/include/TFile.h \
@@ -315,6 +315,6 @@ drawClosureTest.o drawClosureTest.d : drawClosureTest.cpp /usr/include/stdlib.h 
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/external/gcc/4.9.1-cms/include/c++/4.9.1/bits/random.tcc \
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/external/gcc/4.9.1-cms/include/c++/4.9.1/numeric \
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/external/gcc/4.9.1-cms/include/c++/4.9.1/bits/stl_numeric.h \
- /cmshome/fpreiato/DiJet/test/CMSSW_7_4_14/src/CMSDIJET/DijetRootTreeAnalyzer/include/etaBinning.h \
- /cmshome/fpreiato/DiJet/test/CMSSW_7_4_14/src/CMSDIJET/DijetRootTreeAnalyzer/include/ptBinning.h \
+ /cmshome/fpreiato/DiJet/test/CMSSW_7_4_14/src/CMSDIJET/DijetRootTreeAnalyzer/ClosureTest/include/etaBinning.h \
+ /cmshome/fpreiato/DiJet/test/CMSSW_7_4_14/src/CMSDIJET/DijetRootTreeAnalyzer/ClosureTest/include/ptBinning.h \
  /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/bin/../../../../../../lcg/root/6.02.00-odfocd7/include/TColor.h

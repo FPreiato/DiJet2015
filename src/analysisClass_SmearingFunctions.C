@@ -23,7 +23,7 @@
 #include "TFileService.h"
 
 bool verbose = false;
-int n_categories = 2;
+int n_categories = 3;
 int Ev_Initial;
 int Ev_NPartons;
 int Ev_PartonsOK;
@@ -142,14 +142,14 @@ void analysisClass::Loop()
      cout<<"Number of categories choosen: "<<n_categories << endl;
    }  
 
-   TFile *outputSmearing_root = new TFile((*outputFileNameSmearing_ + "_smearing.root").c_str(),"RECREATE");
+   TFile *outputSmearing_root = new TFile((*outputFileNameSmearing_ + "_smearing_Ncat_"+n_categories+".root").c_str(),"RECREATE");
    fwlite::TFileService fs(outputSmearing_root);
    Step_pt.SetVal(mPtBinning.get_PtStep()) ;
-   cout<<Step_pt.GetVal() <<endl;
+   cout<<"Smearing function with pT bin of "<<Step_pt.GetVal() <<endl;
    NCategory.SetVal(n_categories) ;
-   cout<<NCategory.GetVal() <<endl;
+   //   cout<<NCategory.GetVal() <<endl;
    NFile.SetVal(1) ;
-   cout<<NFile.GetVal()<<endl;
+   //   cout<<NFile.GetVal()<<endl;
 
    Step_pt.Write("PtStep");
    NCategory.Write("n_categories");

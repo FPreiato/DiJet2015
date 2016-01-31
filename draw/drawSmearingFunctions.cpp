@@ -7,7 +7,7 @@
 #include "TH1D.h"
 #include "TH1F.h"
 #include "TAxis.h"
-#include "Compare.h"
+#include "drawSmearingFunctions.h"
 
 #include "etaBinning.h"
 #include "ptBinning.h"
@@ -34,9 +34,16 @@ int main(int argc, char* argv[]) {
     std::cout << "Opened data file '" << dataFileName << "'." << std::endl;
   }
 
-  int n_categories;  
+  int n_cat;  
   TParameter<double>* cat = static_cast<TParameter<double>*>(dataFile->Get("n_categories"));                                                    
-  n_categories = cat->GetVal();                                                                                                             
+  n_cat = cat->GetVal();                                                                                    
+  int n_files;  
+  TParameter<double>* file = static_cast<TParameter<double>*>(dataFile->Get("n_files"));                              
+  n_files = file->GetVal();
+
+  int n_categories;  
+  n_categories = n_cat / n_files;
+
   std::cout << "N categories choose "<< n_categories << std::endl; 
   
   gErrorIgnoreLevel = kWarning;
@@ -88,7 +95,7 @@ int main(int argc, char* argv[]) {
 	Float_t label_cuts_xMax =0.95;
 	Float_t label_cuts_yMax = 0.9;
 	
-	TPaveText* range = new TPaveText(label_cuts_xMin, label_cuts_yMin, label_cuts_xMax, label_cuts_yMax, "brNDC");
+	TPaveText* range = new TPaveText(label_cuts_xMin, label_cuts_yMin, label_cuts_xMax, label_cuts_yMax, "nbNDC");
 	range->SetFillColor(kWhite);
 	range->SetTextSize(0.035);
 	range->SetTextFont(42);
